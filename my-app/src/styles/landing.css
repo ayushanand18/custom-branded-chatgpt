@@ -297,13 +297,12 @@
     tab-size: 4;
     --color-primary: #19c37d;
     --color-secondary: #715fde;
-    --color-error: #ef4146;
     --gradient-primary: linear-gradient(90deg,#a29bd4,#989fdd);
     --text-primary: #202123;
     --text-default: #353740;
     --text-secondary: #6e6e80;
     --text-disabled: #acacbe;
-    --text-error: var(--color-error);
+    --text-error: #ef4146;
     color-scheme: light;
     border: 0 solid #d9d9e3;
     box-sizing: border-box;
@@ -370,11 +369,12 @@
     line-height: 1.25rem;
     padding: .5rem .75rem;
     pointer-events: auto;
-    --tw-bg-opacity: 1;
-    --tw-text-opacity: 1;
-    background-color: rgba(16,163,127,var(--tw-bg-opacity));
-    color: rgba(255,255,255,var(--tw-text-opacity));
+    background-color: rgba(16,163,127,1);
+    color: rgba(255,255,255,1);
     position: relative;
+}
+.flexHome .buttonSet .button:hover {
+    background-color: rgba(26,127,100,1);
 }
 .flexHome .buttonSet .signupButton {
     -webkit-text-size-adjust: 100%;

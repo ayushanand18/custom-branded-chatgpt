@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from "react-router-dom";
 import '../styles/landing.css';
 import Logo from '../assets/logo.svg';
 
@@ -16,8 +17,8 @@ function LandingApp() {
                     Log in with your OpenAI account to continue
                 </div>
                 <div className="buttonSet">
-                    <button className="loginButton">Log in</button>
-                    <button className="signupButton">Sign up</button>
+                    <Link to="auth/login" className="button loginButton">Log in</Link>
+                    <Link to="auth/signup" className="button signupButton">Sign up</Link>
                 </div>
             </div>
             <div className="footer">
