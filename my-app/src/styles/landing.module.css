@@ -1,0 +1,4 @@
+.flexHome{
+    --tw-bg-opacity: 1;
+    background-color: rgba(247,247,248,var(--tw-bg-opacity));
+}
