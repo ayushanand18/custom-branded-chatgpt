@@ -7,38 +7,37 @@ function Chat(){
     const [folders, setFolders] = useState([
         {"name":"folder1", "chats":["c_1"], "id":"f_1"},
     ])
-    const [openChats, setOpenChats] = useState([false]*folders.length);
+    const [openChats, setOpenChats] = useState(new Array(folders.length).fill(false));
 
-    console.log(chats);
-
-    const pinnedChatsContainer = pinnedChats?.map((index, chat_id)=>{
+    const pinnedChatsContainer = pinnedChats?.map((chat_id)=>{
         return (
             <li key={chat_id} className="listItem"> 
-                <svg key={chat_id} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="25" width="25" xmlns="http://www.w3.org/2000/svg">
+                <svg key={chat_id}
+                    stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg> 
-                <div key={chat_id}>
+                <span key={chat_id}>
                     {chats[chat_id]}
-                </div>
+                </span>
             </li>
         )
     })
     
-    const foldersContainer = folders?.map((index, folderInfo) => {
+    const foldersContainer = folders?.map((folderInfo, index) => {
         return (
         <span>
             <li key={folderInfo.id} className="listItem" onClick={()=>{
-                openChats[folderInfo.id] ^= true;
-                console.log("clicked!")
+                openChats[index] ^= true;
                 setOpenChats(openChats);
             }}>
-                <svg key={index} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128" width="30" height="30">
+                <svg key={folderInfo.id} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128" width="36" height="36">
                     <path stroke="#fff" strokeLinecap="round" strokeWidth="6" d="M26 45.5C26 35.835 33.835 28 43.5 28V28L55.3399 28C58.7317 28 61.7549 30.1389 62.8838 33.3374L65.1727 39.8226C66.2737 42.9422 69.1813 45.0623 72.4881 45.1568L84.5 45.5V45.5C94.0831 45.2262 102 52.9202 102 62.5071L102 74.5V80C102 90.4934 93.4934 99 83 99V99L64 99L45 99V99C34.5066 99 26 90.4934 26 80L26 66L26 45.5Z" ></path>
                 </svg>
-            {folderInfo.name}</li>
-            <div key={folderInfo.id} className="openFolderChats" style={{display:openChats[folderInfo.id]?'block':'none'}}>
-                <ul key={folderInfo.id}>{
-                    folderInfo.chats?.map((index, chat_id) => {
+                {folderInfo.name}
+            </li>
+            <div key={folderInfo.id} className="openFolderChats" style={{display:openChats[index]?'block':'none'}}>
+                <ul key={folderInfo.id+"ul"}>{
+                    folderInfo.chats?.map((chat_id) => {
                         return (<li key={chat_id}>{chats[chat_id]}</li>)
                     })
                 }</ul>
