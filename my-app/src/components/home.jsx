@@ -6,9 +6,9 @@ function Home() {
     const verified = false;
     
     if(verified)
-        return <Chat />
+        return <Chat />;
     else
-        return <Landing />
+        return <Landing />;
 }
 
 export default Home;

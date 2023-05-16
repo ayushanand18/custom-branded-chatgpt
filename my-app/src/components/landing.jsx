@@ -17,8 +17,8 @@ function LandingApp() {
                     Log in with your OpenAI account to continue
                 </div>
                 <div className="buttonSet">
-                    <Link to="auth/login" className="button loginButton">Log in</Link>
-                    <Link to="auth/signup" className="button signupButton">Sign up</Link>
+                    <Link to="/auth/login" className="button loginButton">Log in</Link>
+                    <Link to="/auth/signup" className="button signupButton">Sign up</Link>
                 </div>
             </div>
             <div className="footer">
