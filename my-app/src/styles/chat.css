@@ -1403,3 +1403,114 @@ summary{ list-style: none }
 .gap-3 {
     border-bottom: none;
 }
+.stickyLabel {
+    display: none;
+}
+
+@media only screen and (max-width: 800) {
+    .stickyTopbar{
+        display: flex;
+    }
+    .inlineFlex {
+        -webkit-text-size-adjust: 100%;
+        tab-size: 4;
+        --color-primary: #19c37d;
+        --color-secondary: #715fde;
+        --color-error: #ef4146;
+        --gradient-primary: linear-gradient(90deg,#a29bd4,#989fdd);
+        --text-primary: #202123;
+        --text-default: #353740;
+        --text-secondary: #6e6e80;
+        --text-disabled: #acacbe;
+        --text-error: var(--color-error);
+        color-scheme: light;
+        --tw-bg-opacity: 1;
+        --tw-text-opacity: 1;
+        border: 0 solid #d9d9e3;
+        box-sizing: border-box;
+        --tw-border-spacing-x: 0;
+        --tw-border-spacing-y: 0;
+        --tw-translate-x: 0;
+        --tw-translate-y: 0;
+        --tw-rotate: 0;
+        --tw-skew-x: 0;
+        --tw-skew-y: 0;
+        --tw-scale-x: 1;
+        --tw-scale-y: 1;
+        --tw-pan-x: ;
+        --tw-pan-y: ;
+        --tw-pinch-zoom: ;
+        --tw-scroll-snap-strictness: proximity;
+        --tw-gradient-from-position: ;
+        --tw-gradient-via-position: ;
+        --tw-gradient-to-position: ;
+        --tw-ordinal: ;
+        --tw-slashed-zero: ;
+        --tw-numeric-figure: ;
+        --tw-numeric-spacing: ;
+        --tw-numeric-fraction: ;
+        --tw-ring-inset: ;
+        --tw-ring-offset-width: 0px;
+        --tw-ring-offset-color: #fff;
+        --tw-ring-color: rgba(69,89,164,.5);
+        --tw-ring-offset-shadow: 0 0 transparent;
+        --tw-ring-shadow: 0 0 transparent;
+        --tw-shadow: 0 0 transparent;
+        --tw-shadow-colored: 0 0 transparent;
+        --tw-blur: ;
+        --tw-brightness: ;
+        --tw-contrast: ;
+        --tw-grayscale: ;
+        --tw-hue-rotate: ;
+        --tw-invert: ;
+        --tw-saturate: ;
+        --tw-sepia: ;
+        --tw-drop-shadow: ;
+        --tw-backdrop-blur: ;
+        --tw-backdrop-brightness: ;
+        --tw-backdrop-contrast: ;
+        --tw-backdrop-grayscale: ;
+        --tw-backdrop-hue-rotate: ;
+        --tw-backdrop-invert: ;
+        --tw-backdrop-opacity: ;
+        --tw-backdrop-saturate: ;
+        --tw-backdrop-sepia: ;
+        color: inherit;
+        font-family: inherit;
+        font-size: 100%;
+        font-weight: inherit;
+        line-height: inherit;
+        margin: 0;
+        padding: 0;
+        text-transform: none;
+        cursor: pointer;
+        -webkit-appearance: button;
+        background-color: transparent;
+        background-image: none;
+        margin-left: -.125rem;
+        margin-top: -.125rem;
+        display: inline-flex;
+        height: 2.5rem;
+        width: 2.5rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: .375rem;
+    }
+    .flexTextNormal {
+        -webkit-text-size-adjust: 100%;
+        font-feature-settings: normal;
+        font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+        font-variation-settings: normal;
+        tab-size: 4;
+        color-scheme: light;
+        color: rgba(217,217,227,1);
+        border: 0 solid #d9d9e3;
+        box-sizing: border-box;
+        margin: 0;
+        flex: 1 1 0%;
+        text-align: center;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        font-weight: 400;
+    }
+}
