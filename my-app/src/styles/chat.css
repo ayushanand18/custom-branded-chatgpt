@@ -1423,7 +1423,7 @@ summary{ list-style: none }
         box-sizing: border-box;
         position: sticky;
         top: 0;
-        z-index: 10;
+        z-index: 4;
         display: flex;
         align-items: center;
         border-bottom-width: 1px;
@@ -1522,5 +1522,8 @@ summary{ list-style: none }
         vertical-align: middle;
         height: 1.5rem;
         width: 1.5rem;
+    }
+    .container {
+        height: calc(100vh - 43px);
     }
 }

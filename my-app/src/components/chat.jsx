@@ -1,4 +1,4 @@
-import {React, useState} from "react";
+import { React, useState, useEffect } from "react";
 import ChatContainer from './chatcontainer';
 import '../styles/chat.css';
 
@@ -11,7 +11,12 @@ function Chat(){
     const [userInfo, setUserInfo] = useState({"name":"Ayush Anand"});
     const [dialogVisibility, setDialogVisbility] = useState(false);
     const [quickContextVisibility, setQuickContextVisibility] = useState(false);
+    const [openNav, setOpenNav] = useState(false);
 
+    useEffect(() => {
+        if(window.innerWidth >900 ) setOpenNav(true);
+      }, []);
+    
     function handleOpenDialog() {
         const newVisibility = dialogVisibility^true;
         setDialogVisbility(newVisibility);
@@ -23,9 +28,10 @@ function Chat(){
     }
 
     function handleOpenNav() {
-
+        const nav = openNav^true;
+        setOpenNav(nav);
     }
-    
+
     const pinnedChatsContainer = pinnedChats?.map((chat_id)=>{
         return (
             <li key={chat_id+"li"} className="listItem"> 
@@ -85,7 +91,7 @@ function Chat(){
                 </button> */}
             </div>
             <div className="container">
-                <div className="navSection">
+                <div className="navSection" style={{display:openNav?"flex":"none"}}>
                     <div className="flexDiv">
                         <div className="navMenu">
                             <div className="newChatButton">
