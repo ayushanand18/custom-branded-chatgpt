@@ -1,8 +1,22 @@
 import { React, useState, useEffect } from "react";
+import { initializeApp } from "firebase/app";
 import ChatContainer from './chatcontainer';
 import '../styles/chat.css';
+require('dotenv').config()
 
 function Chat(){
+    const firebaseConfig = {
+        apiKey: REACT_APP_FIREBASE_API_KEY,
+        authDomain: REACT_APP_FIREBASE_AUTH_DOMAIN,
+        projectId: REACT_APP_FIREBASE_PROJECT_ID,
+        storageBucket: REACT_APP_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+        appId: REACT_APP_FIREBASE_APP_ID,
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
     const [chats, setChats] = useState({"c_1":"first chat"})
     const [pinnedChats, setPinnedChats] = useState(["c_1"])
     const [folders, setFolders] = useState([
