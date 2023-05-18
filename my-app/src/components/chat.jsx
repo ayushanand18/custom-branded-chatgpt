@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { initializeApp } from "firebase/app";
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import ChatContainer from './chatcontainer';
 import '../styles/chat.css';
@@ -26,15 +26,33 @@ function Chat(){
     const [folders, setFolders] = useState([
         {"name":"folder1", "chats":["c_1"], "id":"f_1"},
     ])
-    const [userInfo, setUserInfo] = useState({"name":"Ayush Anand"});
+    const [userInfo, setUserInfo] = useState({"displayName":""});
     const [dialogVisibility, setDialogVisbility] = useState(false);
     const [quickContextVisibility, setQuickContextVisibility] = useState(false);
     const [openNav, setOpenNav] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const [isOverlay, setIsOverlay] = useState(false);
+    const [userName, setUserName] = useState(userInfo.displayName);
 
+    const [authState, setAuthState] = useState({
+        isSignedIn: false,
+        pending: true,
+        user: null,
+    })
+
+    useEffect(() => {
+        const unregisterAuthObserver = auth.onAuthStateChanged(user => {
+            setAuthState({ user, pending: false, isSignedIn: !!user })
+            setUserInfo(user)
+            setUserName(userInfo.displayName)
+        })
+        return () => unregisterAuthObserver()
+    }, [])
+    
     useEffect(() => {
         if(window.innerWidth >900 ) setOpenNav(true);
       }, []);
-    
+
     function handleLogout (){
         signOut(auth);
         navigate('/', { replace: true });
@@ -43,16 +61,44 @@ function Chat(){
     function handleOpenDialog() {
         const newVisibility = dialogVisibility^true;
         setDialogVisbility(newVisibility);
+        setQuickContextVisibility(false);
     }
 
     function handleOpenContext() {
         const newVisibility = quickContextVisibility^true;
         setQuickContextVisibility(newVisibility);
+        setDialogVisbility(false);
     }
 
     function handleOpenNav() {
         const nav = openNav^true;
         setOpenNav(nav);
+    }
+
+    function handleSettingsOpen() {
+        setSettingsOpen(true);
+        setIsOverlay(true);
+    }
+
+    function handleCloseSettings(){
+        setSettingsOpen(false);
+        setIsOverlay(false);
+    }
+
+    function handleNameChange(event){
+        setUserName(event.target.value);
+    }
+
+    function handleUpdateUser(){
+        updateProfile(auth.currentUser, {
+            displayName: userName,
+        }).then(() => {
+            alert("profile updated")
+        }).catch((error) => {
+            alert(error)
+        });
+        setSettingsOpen(false)
+        setIsOverlay(false)
     }
 
     const pinnedChatsContainer = pinnedChats?.map((chat_id)=>{
@@ -61,7 +107,7 @@ function Chat(){
                 <svg key={chat_id}
                     stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg> 
+                </svg>
                 <span key={chat_id}>
                     {chats[chat_id]}
                 </span>
@@ -93,21 +139,31 @@ function Chat(){
 
     return (
         <div className="wrapper">
-            <div className="overlay"></div>
-            <div class="stickyTopbar">
-                <button type="button" onClick={handleOpenNav} class="inlineFlex">
-                    <span class="sr-only">Open sidebar</span>
+            <div className="settingContainer" style={{display:settingsOpen?"flex":"none"}}>
+                <h2 style={{color:"white"}}>Settings</h2>
+                <div>Signed in as {userInfo.email}</div>
+                <label for="name">Name</label>
+                <input type="text" className="input nameField" id="nameField" placeholder="name" value={userName} onChange={handleNameChange}/>
+                <div className="buttonGroup">
+                    <button className="updateUserInfo" onClick={handleUpdateUser}>Update</button>
+                    <button className="closeSettings" onClick={handleCloseSettings}>Cancel</button>
+                </div>
+            </div>
+            <div className="overlay" style={{display:isOverlay?"block":"none"}}></div>
+            <div className="stickyTopbar">
+                <button type="button" onClick={handleOpenNav} className="inlineFlex">
+                    <span className="sr-only">Open sidebar</span>
                     <svg stroke="currentColor" fill="none" strokeWidth="1.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
                         <line x1="3" y1="6" x2="21" y2="6"></line>
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
-                <h1 class="flexTextNormal">ChatGPT</h1>
+                <h1 className="flexTextNormal">ChatGPT</h1>
                 {/* 
                 hiding this add button for now
-                <button type="button" class="buttonAdd">
-                    <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <button type="button" className="buttonAdd">
+                    <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" className="h-6 w-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
@@ -147,15 +203,15 @@ function Chat(){
                     <div className="absolute" style={{display: quickContextVisibility?"inline":"none", bottom:"0rem", marginBottom:"7.2rem"}}>
                         <nav role="none" className="shortDialog" >
                             <a as="a" href="#faq" target="_blank" className="py-3 transitionColors" id="headlessui-menu-item-:r2u:" role="menuitem" tabindex="-1" >
-                                <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                                     <polyline points="15 3 21 3 21 9"></polyline>
                                     <line x1="10" y1="14" x2="21" y2="3"></line>
                                 </svg>
                                 Save Context
                             </a>
-                            <span href="#" as="button" class="py-3 transitionColors gap-3" id="headlessui-menu-item-:r30:" role="menuitem" tabindex="-1" >
-                                <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                            <span href="#" as="button" className="py-3 transitionColors gap-3" id="headlessui-menu-item-:r30:" role="menuitem" tabindex="-1" >
+                                <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="12" cy="12" r="3"></circle>
                                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                                 </svg>
@@ -181,15 +237,15 @@ function Chat(){
                         <div className="absolute" style={{bottom: dialogVisibility?"0%":"100%"}}>
                             <nav role="none" className="shortDialog" >
                                 <a as="a" href="#faq" target="_blank" className="py-3 transitionColors" id="headlessui-menu-item-:r2u:" role="menuitem" tabindex="-1" >
-                                    <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                    <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                                         <polyline points="15 3 21 3 21 9"></polyline>
                                         <line x1="10" y1="14" x2="21" y2="3"></line>
                                     </svg>
                                     Help &amp; FAQ
                                 </a>
-                                <span href="#" as="button" class="py-3 transitionColors" id="headlessui-menu-item-:r30:" role="menuitem" tabindex="-1" >
-                                    <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                <span href="#" as="button" className="py-3 transitionColors" id="headlessui-menu-item-:r30:" role="menuitem" tabindex="-1" onClick={handleSettingsOpen} >
+                                    <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="12" cy="12" r="3"></circle>
                                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                                     </svg>
@@ -206,7 +262,7 @@ function Chat(){
                             </nav>
                         </div>
 
-                        <div class="groupRelative py-3">
+                        <div className="groupRelative py-3">
                             <button className="w-full" onClick={handleOpenDialog} id="headlessui-menu-button-:r7:" type="button" ariaHaspopup="true" ariaExpanded="false">
                                 <div className="-ml-0.5">
                                     <div className="relativeFlex">
@@ -216,12 +272,12 @@ function Chat(){
                                             </span>
                                                 <img className="profileImage rounded-sm" alt="User"
                                                 height="40px"
-                                                src="/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fa%2FAGNmyxb1IpFxxihIpCptyrGDGIFPwpm6lvJDtLWogCrCyQ%3Ds96-c&amp;w=48&amp;q=75" decoding="async" dataNimg="intrinsic"
-                                                srcset="/_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fa%2FAGNmyxb1IpFxxihIpCptyrGDGIFPwpm6lvJDtLWogCrCyQ%3Ds96-c&amp;w=32&amp;q=75 1x, /_next/image?url=https%3A%2F%2Flh3.googleusercontent.com%2Fa%2FAGNmyxb1IpFxxihIpCptyrGDGIFPwpm6lvJDtLWogCrCyQ%3Ds96-c&amp;w=48&amp;q=75 2x" />
+                                                src={userInfo.photoUrl} decoding="async" dataNimg="intrinsic"
+                                                srcset={userInfo.photoUrl} />
                                             </span>
                                     </div>
                                 </div>
-                                <div class="overflowHidden">{userInfo.name}</div>
+                                <div className="overflowHidden">{userInfo.displayName}</div>
                                 <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 flex-shrink-0 text-gray-500" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="12" cy="12" r="1"></circle>
                                     <circle cx="19" cy="12" r="1"></circle>

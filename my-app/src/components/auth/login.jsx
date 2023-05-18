@@ -36,7 +36,7 @@ function Login() {
         )
         return () => unregisterAuthObserver()
     }, [])
-    
+
     if(authState.pending) return <h1>working...</h1>
     else if(authState.isSignedIn) {
         navigate('/', { replace: true });
