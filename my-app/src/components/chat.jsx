@@ -18,7 +18,6 @@ function Chat(){
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-
     const navigate = useNavigate();
     
     const [chats, setChats] = useState({"c_1":"first chat"})
