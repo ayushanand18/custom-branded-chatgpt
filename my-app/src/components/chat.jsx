@@ -1,8 +1,9 @@
 import { React, useState, useEffect } from "react";
 import { initializeApp } from "firebase/app";
+import { getAuth, signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 import ChatContainer from './chatcontainer';
 import '../styles/chat.css';
-
 
 function Chat(){
     const firebaseConfig = {
@@ -16,7 +17,10 @@ function Chat(){
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
+    const navigate = useNavigate();
+    
     const [chats, setChats] = useState({"c_1":"first chat"})
     const [pinnedChats, setPinnedChats] = useState(["c_1"])
     const [folders, setFolders] = useState([
@@ -31,6 +35,11 @@ function Chat(){
         if(window.innerWidth >900 ) setOpenNav(true);
       }, []);
     
+    function handleLogout (){
+        signOut(auth);
+        navigate('/', { replace: true });
+    }
+
     function handleOpenDialog() {
         const newVisibility = dialogVisibility^true;
         setDialogVisbility(newVisibility);
@@ -186,7 +195,7 @@ function Chat(){
                                     </svg>
                                     Settings
                                 </span>
-                                <span href="#" as="button" className="py-3 transitionColors gap-3" role="menuitem" tabindex="-1" >
+                                <span href="#" as="button" className="py-3 transitionColors gap-3" role="menuitem" tabindex="-1" onClick={handleLogout}>
                                     <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                         <polyline points="16 17 21 12 16 7"></polyline>
