@@ -1,4 +1,6 @@
 :root {
+    --tw-shadow: 0 0 10px rgba(0,0,0,.1);
+    --tw-shadow-colored: 0 0 10px var(--tw-shadow-color);
     --info-color: #0a66e1;
     --success-color: #0a8852;
     --error-color: #d00e17;
@@ -269,73 +271,21 @@
     font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
     font-variation-settings: normal;
     tab-size: 4;
-    --color-primary: #19c37d;
-    --color-secondary: #715fde;
-    --color-error: #ef4146;
-    --gradient-primary: linear-gradient(90deg,#a29bd4,#989fdd);
-    --text-primary: #202123;
-    --text-default: #353740;
-    --text-secondary: #6e6e80;
-    --text-disabled: #acacbe;
-    --text-error: var(--color-error);
     color-scheme: light;
     line-height: inherit;
-    --tw-bg-opacity: 1;
     border: 0 solid #d9d9e3;
     box-sizing: border-box;
-    --tw-border-spacing-x: 0;
-    --tw-border-spacing-y: 0;
-    --tw-translate-x: 0;
-    --tw-translate-y: 0;
-    --tw-rotate: 0;
-    --tw-skew-x: 0;
-    --tw-skew-y: 0;
-    --tw-scale-x: 1;
-    --tw-scale-y: 1;
-    --tw-pan-x: ;
-    --tw-pan-y: ;
-    --tw-pinch-zoom: ;
-    --tw-scroll-snap-strictness: proximity;
-    --tw-gradient-from-position: ;
-    --tw-gradient-via-position: ;
-    --tw-gradient-to-position: ;
-    --tw-ordinal: ;
-    --tw-slashed-zero: ;
-    --tw-numeric-figure: ;
-    --tw-numeric-spacing: ;
-    --tw-numeric-fraction: ;
-    --tw-ring-inset: ;
-    --tw-ring-offset-width: 0px;
-    --tw-ring-offset-color: #fff;
-    --tw-ring-color: rgba(69,89,164,.5);
-    --tw-ring-offset-shadow: 0 0 transparent;
-    --tw-ring-shadow: 0 0 transparent;
-    --tw-shadow: 0 0 transparent;
-    --tw-shadow-colored: 0 0 transparent;
-    --tw-blur: ;
-    --tw-brightness: ;
-    --tw-contrast: ;
-    --tw-grayscale: ;
-    --tw-hue-rotate: ;
-    --tw-invert: ;
-    --tw-saturate: ;
-    --tw-sepia: ;
-    --tw-drop-shadow: ;
-    --tw-backdrop-blur: ;
-    --tw-backdrop-brightness: ;
-    --tw-backdrop-contrast: ;
-    --tw-backdrop-grayscale: ;
-    --tw-backdrop-hue-rotate: ;
-    --tw-backdrop-invert: ;
-    --tw-backdrop-opacity: ;
-    --tw-backdrop-saturate: ;
-    --tw-backdrop-sepia: ;
     position: relative;
     height: 100%;
     width: 100%;
     flex: 1 1 0%;
     align-items: flex-start;
     border-color: hsla(0,0%,100%,.2);
+    overflow-y: scroll;
+    box-sizing: content-box;
+}
+.flexDiv::-webkit-scrollbar {
+    display: none;
 }
 .navMenu {
     z-index: 3;
@@ -792,56 +742,111 @@ ol div{
 summary{ list-style: none }
 
 /* ChatContainer Styles */
-.sendButton {
+.divOne {
     -webkit-text-size-adjust: 100%;
+    font-feature-settings: normal;
+    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+    font-variation-settings: normal;
     tab-size: 4;
     color-scheme: light;
+    line-height: inherit;
     border: 0 solid #d9d9e3;
     box-sizing: border-box;
-    font-family: inherit;
-    font-size: 100%;
-    font-weight: inherit;
-    line-height: inherit;
-    margin: 0;
-    text-transform: none;
-    -webkit-appearance: button;
-    background-color: transparent;
-    background-image: none;
-    cursor: default;
     position: absolute;
-    border-radius: .375rem;
-    padding: .25rem;
-    color: rgba(142,142,160,1);
-    bottom: .625rem;
-    right: .5rem;
-    opacity: .4;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding-top: .5rem;
+    border-top-width: 0;
+    border-color: transparent;
+    background-color: transparent!important;
+    background-image: linear-gradient(180deg,hsla(0,0%,100%,0) 13.94%,#fff 54.73%);
 }
-.sendButton>svg {
+.formOne {
     -webkit-text-size-adjust: 100%;
+    font-feature-settings: normal;
+    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+    font-variation-settings: normal;
     tab-size: 4;
     color-scheme: light;
-    font-family: inherit;
-    font-size: 100%;
-    font-weight: inherit;
     line-height: inherit;
-    text-transform: none;
-    cursor: default;
-    color: rgba(142,142,160,1);
-    stroke: currentcolor;
-    fill: none;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
     border: 0 solid #d9d9e3;
     box-sizing: border-box;
-    display: inline;
-    vertical-align: middle;
-    margin-right: .25rem;
-    height: 1rem;
-    width: 1rem;
+    display: flex;
+    flex-direction: row;
+    gap: .75rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
 }
-.promptArea {
-    resize: vertical;
+.divTwo {
+    -webkit-text-size-adjust: 100%;
+    font-feature-settings: normal;
+    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+    font-variation-settings: normal;
+    tab-size: 4;
+    color-scheme: light;
+    line-height: inherit;
+    --tw-bg-opacity: 1;
+    border: 0 solid #d9d9e3;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    height: 100%;
+    flex: 1 1 0%;
+    align-items: stretch;
+    flex-direction: column;
+}
+.divThree {
+    -webkit-text-size-adjust: 100%;
+    font-feature-settings: normal;
+    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+    font-variation-settings: normal;
+    tab-size: 4;
+    color-scheme: light;
+    line-height: inherit;
+    border: 0 solid #d9d9e3;
+    box-sizing: border-box;
+}
+.divExtra {
+    -webkit-text-size-adjust: 100%;
+    font-feature-settings: normal;
+    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+    font-variation-settings: normal;
+    tab-size: 4;
+    color-scheme: light;
+    line-height: inherit;
+    border: 0 solid #d9d9e3;
+    box-sizing: border-box;
+}
+.divFour {
+    -webkit-text-size-adjust: 100%;
+    font-feature-settings: normal;
+    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+    font-variation-settings: normal;
+    tab-size: 4;
+    color-scheme: light;
+    line-height: inherit;
+    border: 0 solid #d9d9e3;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    width: 100%;
+    flex-grow: 1;
+    flex-direction: column;
+    border-radius: .375rem;
+    border-width: 1px;
+    border-color: rgba(0,0,0,.1);
+    background-color: rgba(255,255,255,var(--tw-bg-opacity));
+    box-shadow: var(--tw-ring-offset-shadow,0 0 transparent),var(--tw-ring-shadow,0 0 transparent),var(--tw-shadow);
+    padding-bottom: .75rem;
+    padding-top: .75rem;
+    padding-left: 1rem;
+}
+.divFour>textarea{
+    max-height: 200px;
+    height: 24px;
+    overflow-y: hidden;
     -webkit-text-size-adjust: 100%;
     tab-size: 4;
     color-scheme: light;
@@ -863,150 +868,71 @@ summary{ list-style: none }
     padding: 0;
     padding-right: 1.75rem;
     padding-left: 0;
-    overflow-y: hidden;
-    min-height: 24px;
     max-height: 200px;
-}
-.textArea {
-    -webkit-text-size-adjust: 100%;
-    font-feature-settings: normal;
-    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
-    font-variation-settings: normal;
-    tab-size: 4;
-    --color-primary: #19c37d;
-    --color-secondary: #715fde;
-    --color-error: #ef4146;
-    --gradient-primary: linear-gradient(90deg,#a29bd4,#989fdd);
-    --text-primary: #202123;
-    --text-default: #353740;
-    --text-secondary: #6e6e80;
-    --text-disabled: #acacbe;
-    --text-error: var(--color-error);
-    color-scheme: light;
-    line-height: inherit;
-    border: 0 solid #d9d9e3;
-    box-sizing: border-box;
-    --tw-border-spacing-x: 0;
-    --tw-border-spacing-y: 0;
-    --tw-translate-x: 0;
-    --tw-translate-y: 0;
-    --tw-rotate: 0;
-    --tw-skew-x: 0;
-    --tw-skew-y: 0;
-    --tw-scale-x: 1;
-    --tw-scale-y: 1;
-    --tw-pan-x: ;
-    --tw-pan-y: ;
-    --tw-pinch-zoom: ;
-    --tw-scroll-snap-strictness: proximity;
-    --tw-gradient-from-position: ;
-    --tw-gradient-via-position: ;
-    --tw-gradient-to-position: ;
-    --tw-ordinal: ;
-    --tw-slashed-zero: ;
-    --tw-numeric-figure: ;
-    --tw-numeric-spacing: ;
-    --tw-numeric-fraction: ;
-    --tw-ring-inset: ;
-    --tw-ring-offset-width: 0px;
-    --tw-ring-offset-color: #fff;
-    --tw-ring-color: rgba(69,89,164,.5);
-    --tw-ring-offset-shadow: 0 0 transparent;
-    --tw-ring-shadow: 0 0 transparent;
-    --tw-blur: ;
-    --tw-brightness: ;
-    --tw-contrast: ;
-    --tw-grayscale: ;
-    --tw-hue-rotate: ;
-    --tw-invert: ;
-    --tw-saturate: ;
-    --tw-sepia: ;
-    --tw-drop-shadow: ;
-    --tw-backdrop-blur: ;
-    --tw-backdrop-brightness: ;
-    --tw-backdrop-contrast: ;
-    --tw-backdrop-grayscale: ;
-    --tw-backdrop-hue-rotate: ;
-    --tw-backdrop-invert: ;
-    --tw-backdrop-opacity: ;
-    --tw-backdrop-saturate: ;
-    --tw-backdrop-sepia: ;
-    position: relative;
-    display: flex;
-    width: 100%;
-    flex-grow: 1;
-    flex-direction: column;
-    border-radius: .375rem;
-    border-width: 1px;
-    border-color: rgba(0,0,0,.1);
-    --tw-bg-opacity: 1;
-    background-color: rgba(255,255,255,var(--tw-bg-opacity));
-    --tw-shadow: 0 0 10px rgba(0,0,0,.1);
-    --tw-shadow-colored: 0 0 10px var(--tw-shadow-color);
-    box-shadow: var(--tw-ring-offset-shadow,0 0 transparent),var(--tw-ring-shadow,0 0 transparent),var(--tw-shadow);
-    padding-bottom: .75rem;
-    padding-top: .75rem;
-    padding-left: 1rem;
+    height: 24px;
     overflow-y: hidden;
-    height: auto;
 }
-.wrapperArea {
+.divFive{
     -webkit-text-size-adjust: 100%;
-    font-feature-settings: normal;
-    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
-    font-variation-settings: normal;
     tab-size: 4;
     color-scheme: light;
-    line-height: inherit;
     border: 0 solid #d9d9e3;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: row;
-    gap: .75rem;
-    
+    font-family: inherit;
+    font-size: 100%;
+    font-weight: inherit;
+    line-height: inherit;
+    margin: 0;
+    text-transform: none;
+    -webkit-appearance: button;
+    background-color: transparent;
+    background-image: none;
+    cursor: default;
+    position: absolute;
+    border-radius: .375rem;
+    padding: .25rem;
+    color: rgba(142,142,160,var(--tw-text-opacity));
+    bottom: .625rem;
+    right: .5rem;
+    opacity: .4;
+}
+.divFive>svg{
     -webkit-text-size-adjust: 100%;
-    font-feature-settings: normal;
-    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
-    font-variation-settings: normal;
     tab-size: 4;
     color-scheme: light;
+    font-family: inherit;
+    font-size: 100%;
+    font-weight: inherit;
     line-height: inherit;
+    text-transform: none;
+    cursor: default;
+    color: rgba(142,142,160,var(--tw-text-opacity));
+    stroke: currentcolor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
     border: 0 solid #d9d9e3;
     box-sizing: border-box;
-    position: relative;
-    display: flex;
-    height: auto;
-    flex: 1 1 0%;
-    align-items: stretch;
-    flex-direction: column;
-    margin: 0px auto 0px auto;
-    width: 100%;
-    max-width: 50rem;
+    display: block;
+    vertical-align: middle;
+    margin-right: .25rem;
+    height: 1rem;
+    width: 1rem;
 }
-.promptArea:focus-visible{
+.divFive>svg:hover {
+    cursor:pointer;
+}
+.divFour>textarea:focus-visible{
     outline: none;
 }
-.absoluteWrapper {
-    -webkit-text-size-adjust: 100%;
-    font-feature-settings: normal;
-    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
-    font-variation-settings: normal;
-    tab-size: 4;
-    color-scheme: light;
-    line-height: inherit;
-    border: 0 solid #d9d9e3;
-    box-sizing: border-box;
-    position: absolute;
-    bottom: 0;
-    left: 0;
+.wrapChatList {
     width: 100%;
-    padding-top: .5rem;
-    border-top-width: 0;
-    border-color: transparent;
-    background-color: transparent!important;
-    background-image: linear-gradient(180deg,hsla(0,0%,100%,0) 13.94%,#fff 54.73%);
+    flex-direction: column;
+    flex-grow: 1;
 }
 .chatList {
+    overflow-y: scroll;
     -webkit-text-size-adjust: 100%;
     font-feature-settings: normal;
     font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
@@ -1027,8 +953,7 @@ summary{ list-style: none }
     color-scheme: light;
     border: 0 solid #d9d9e3;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+    display: block;
     align-items: center;
     font-size: .875rem;
     line-height: 1.25rem;
@@ -1159,6 +1084,8 @@ summary{ list-style: none }
     border-radius: .125rem;
     padding: .25rem;
     color: rgba(255,255,255,1);
+}
+.gptIcon {
     background-color: rgb(25, 195, 125);
 }
 .avatarIcon>svg {
@@ -1667,6 +1594,9 @@ summary{ list-style: none }
     .container {
         height: calc(100vh - 43px);
     }
+}
+.containerWrapper {
+    height: calc(100vh - 73px);
 }
 .settingContainer {
     position: absolute;

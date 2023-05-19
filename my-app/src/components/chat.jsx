@@ -1,7 +1,7 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useRef } from "react";
 import { initializeApp } from "firebase/app";
 import { getAuth, signOut, updateProfile } from "firebase/auth";
-import { doc, addDoc, getDoc, getDocs, getFirestore, collection, DocumentSnapshot } from "firebase/firestore";
+import { doc, addDoc, getDoc, getDocs, getFirestore, collection, updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import ChatContainer from './chatcontainer';
 import '../styles/chat.css';
@@ -23,7 +23,6 @@ function Chat(){
 
     const navigate = useNavigate();
     
-    const [chats, setChats] = useState({"c_1":"firstChat"})
     const [pinnedChats, setPinnedChats] = useState(["c_1"])
     const [folders, setFolders] = useState([
         {"name":"folder1", "chats":["c_1"], "id":"f_1"},
@@ -37,8 +36,11 @@ function Chat(){
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [isOverlay, setIsOverlay] = useState(false);
     const [userName, setUserName] = useState(userInfo.displayName);
-    const [chatList, setChatList] = useState({});
-    const [defaultDoc, setDefaultDoc] = useState([]);
+    const [chatList, setChatList] = useState({})
+    const [defaultDoc, setDefaultDoc] = useState([])
+    const [promptValue, setPromptValue] = useState("")
+    const bottomRef = useRef()
+    const [messageCount, setMessageCount] = useState(0)
     const [authState, setAuthState] = useState({
         isSignedIn: false,
         pending: true,
@@ -59,6 +61,10 @@ function Chat(){
         if(window.innerWidth >900 ) setOpenNav(true);
     }, []);
 
+    useEffect(() => {
+        bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }, [messageCount]);
+
     async function handleDataFetch(user) {
         const chatsRef = collection(db, `users/${user.uid}/chats`);
         const userData = await getDoc(doc(db, `users`,`${user.uid}`))
@@ -67,6 +73,7 @@ function Chat(){
         let chatDocs = {}
         querySnapshot.forEach((doc) => {
             chatDocs[doc.id] = doc.data()
+            chatDocs[doc.id].uid = doc.id
             // folders[doc.data().folderId]?.chats.push(doc.id)
         })
 
@@ -76,8 +83,10 @@ function Chat(){
         setFolderIds(userData.data().folderIds)
         handleUpdateFolders(userData.data().folderNames, userData.data().folderIds)
         setPinnedChats(userData.data().pinnedChats)
+        setMessageCount(messageCount+1)
     }
 
+    // pending: this feature is left
     function handleUpdateFolders(folderNames, folderIds) {
         let foldersConstruct = []
         for(let index=0; index<folderNames.length; index++) {
@@ -104,14 +113,44 @@ function Chat(){
 
         await addDoc(collection(db, `users/${userInfo.uid}/chats`), data)
         .then((doc)=>{
-            console.log(doc.id)
+            data['uid'] = doc.id
             setDefaultDoc(data)
             let newChatList = chatList
             newChatList[doc.id] = data
             setChatList(newChatList)
+            setMessageCount(0)
         }).catch((error)=>{
             console.log(error)
         })
+    }
+
+    // pending: add chatgpt script
+    function evalChatgpt(prompt){
+        return (new Array(2).fill(String(prompt)+" ").reduce((acc, t) => acc+t))
+    }
+
+    async function handleSubmitPrompt(event) {
+        event.preventDefault()
+        let newDefaultDoc = defaultDoc;
+        if(newDefaultDoc.userPrompts) newDefaultDoc.userPrompts.push(promptValue)
+        else newDefaultDoc['userPrompts'] = [promptValue]
+        
+        setPromptValue("")
+        setDefaultDoc(newDefaultDoc)
+        setMessageCount(messageCount+1)
+
+        let response = evalChatgpt(newDefaultDoc.userPrompts.slice(-1))
+        if(newDefaultDoc?.userPrompts) newDefaultDoc.gptResponse.push(response)
+        else newDefaultDoc['gptResponse'] = [response]
+
+        await updateDoc(doc(db, `users/${userInfo.uid}/chats`, defaultDoc.uid), {
+            userPrompts: newDefaultDoc.userPrompts,
+            gptResponse: newDefaultDoc.gptResponse
+        })
+        .catch((error)=>console.log(error));
+        
+        setDefaultDoc(newDefaultDoc)
+        setMessageCount(messageCount+1)
     }
 
     function handleOpenDialog() {
@@ -141,6 +180,11 @@ function Chat(){
         setIsOverlay(false);
     }
 
+    function handleTextChange(event) {
+        event.preventDefault()
+        setPromptValue(event.target.value)
+    }
+
     function handleNameChange(event){
         setUserName(event.target.value);
     }
@@ -159,7 +203,10 @@ function Chat(){
 
     const pinnedChatsContainer = pinnedChats?.map((chat_id)=>{
         return (
-            <li key={chat_id+"li"} className="listItem" onClick={() => setDefaultDoc(chatList[chat_id])}> 
+            <li key={chat_id+"li"} className="listItem" onClick={() => {
+                setDefaultDoc(chatList[chat_id]) 
+                setMessageCount(messageCount+1)
+            }}> 
                 <svg key={chat_id}
                     stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -185,11 +232,28 @@ function Chat(){
             <p key={folderInfo.id+"p"} className="openFolderChats">
                 <ul key={folderInfo.id+"ul"}>{
                     folderInfo.chats?.map((chat_id) => {
-                        return (<li key={chat_id}>{chats[chat_id]}</li>)
+                        return (<li key={chat_id}>{chatList[chat_id]?.name}</li>)
                     })
                 }</ul>
             </p>
         </details>
+        )
+    })
+
+    const allChats = Object.keys(chatList)?.map((chat_id, index) => {
+        return (
+            <li key={index+"li"} className="listItem" onClick={() => {
+                setDefaultDoc(chatList[chat_id]) 
+                setMessageCount(messageCount+1)
+            }}> 
+                <svg key={index}
+                    stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span key={index}>
+                    {chatList[chat_id]?.name}
+                </span>
+            </li>
         )
     })
 
@@ -254,6 +318,16 @@ function Chat(){
                                     {foldersContainer}
                                 </ol>
                             </div>
+                            <div className="stickyLabel">
+                            <div className="labelHeading">
+                                All chats
+                            </div>
+                        </div>
+                        <div className="folders">
+                            <ol>
+                                {allChats}
+                            </ol>
+                        </div>
                         </div>
                     </div>
                     <div className="absolute" style={{display: quickContextVisibility?"inline":"none", bottom:"0rem", marginBottom:"7.2rem"}}>
@@ -344,7 +418,13 @@ function Chat(){
                     </div>
                 </div>
                 <div className="chatContainer">
-                    <ChatContainer defaultDoc={defaultDoc} />
+                    <ChatContainer 
+                        defaultDoc={defaultDoc} 
+                        handleSubmitPrompt={handleSubmitPrompt}
+                        promptValue={promptValue}
+                        handleTextChange={handleTextChange}
+                        bottomRef={bottomRef}
+                        />
                 </div>
             </div>
         </div>
