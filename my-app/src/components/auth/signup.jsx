@@ -35,16 +35,18 @@ function Signup() {
         )
         return () => unregisterAuthObserver()
     }, [])
-    
+
+    document.title = "Signup to ChatGPT"
+
     if(authState.pending) return <h1>working...</h1>
     else if(authState.isSignedIn) {
         navigate('/', { replace: true });
     }
-    
+
     function handleEmailChange(event) {
         setEmail(event.target.value);
     }
-    
+
     function handlePasswordChange(event) {
         setPassword(event.target.value);
     }
@@ -70,7 +72,9 @@ function Signup() {
     return (
         <div className="wrapper">
             <header className="header">
-                <img src={logo} className="appLogo" alt="logo"/>
+                <Link to="/">
+                    <img src={logo} className="appLogo" alt="logo"/>
+                </Link>
             </header>
             <main className="main">
                 <section className="section">
@@ -90,9 +94,9 @@ function Signup() {
                             <button onClick={handleRegister} className="loginSubmit">Login</button>
                         </div>
                         <div className="signupLink">
-                            Don't have an account?
+                            Already have an account?
                             &nbsp;
-                            <Link to="/auth/signup">Sign up</Link>
+                            <Link to="/auth/login">Login</Link>
                         </div>
                     </form>
                 </section>

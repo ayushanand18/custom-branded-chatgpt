@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { initializeApp } from "firebase/app";
 import { getAuth, signOut, updateProfile } from "firebase/auth";
+import { doc, addDoc, getDoc, getDocs, getFirestore, collection, DocumentSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import ChatContainer from './chatcontainer';
 import '../styles/chat.css';
@@ -18,13 +19,17 @@ function Chat(){
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
+
     const navigate = useNavigate();
     
-    const [chats, setChats] = useState({"c_1":"first chat"})
+    const [chats, setChats] = useState({"c_1":"firstChat"})
     const [pinnedChats, setPinnedChats] = useState(["c_1"])
     const [folders, setFolders] = useState([
         {"name":"folder1", "chats":["c_1"], "id":"f_1"},
     ])
+    const [folderNames, setFolderNames] = useState([])
+    const [folderIds, setFolderIds] = useState([]);
     const [userInfo, setUserInfo] = useState({"displayName":""});
     const [dialogVisibility, setDialogVisbility] = useState(false);
     const [quickContextVisibility, setQuickContextVisibility] = useState(false);
@@ -32,7 +37,8 @@ function Chat(){
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [isOverlay, setIsOverlay] = useState(false);
     const [userName, setUserName] = useState(userInfo.displayName);
-
+    const [chatList, setChatList] = useState({});
+    const [defaultDoc, setDefaultDoc] = useState([]);
     const [authState, setAuthState] = useState({
         isSignedIn: false,
         pending: true,
@@ -43,18 +49,69 @@ function Chat(){
         const unregisterAuthObserver = auth.onAuthStateChanged(user => {
             setAuthState({ user, pending: false, isSignedIn: !!user })
             setUserInfo(user)
+            handleDataFetch(user)
             setUserName(userInfo.displayName)
         })
         return () => unregisterAuthObserver()
     }, [])
-    
+
     useEffect(() => {
         if(window.innerWidth >900 ) setOpenNav(true);
-      }, []);
+    }, []);
+
+    async function handleDataFetch(user) {
+        const chatsRef = collection(db, `users/${user.uid}/chats`);
+        const userData = await getDoc(doc(db, `users`,`${user.uid}`))
+        const querySnapshot = await getDocs(chatsRef);
+
+        let chatDocs = {}
+        querySnapshot.forEach((doc) => {
+            chatDocs[doc.id] = doc.data()
+            // folders[doc.data().folderId]?.chats.push(doc.id)
+        })
+
+        setChatList(chatDocs)
+        setDefaultDoc(chatDocs[userData.data().pinnedChats[0]])
+        setFolderNames(userData.data().folderNames)
+        setFolderIds(userData.data().folderIds)
+        handleUpdateFolders(userData.data().folderNames, userData.data().folderIds)
+        setPinnedChats(userData.data().pinnedChats)
+    }
+
+    function handleUpdateFolders(folderNames, folderIds) {
+        let foldersConstruct = []
+        for(let index=0; index<folderNames.length; index++) {
+            foldersConstruct.push({
+                "name":folderNames[index],
+                "chats":[],
+                "id":folderIds[index],
+            })
+        }
+    }
 
     function handleLogout (){
         signOut(auth);
         navigate('/', { replace: true });
+    }
+
+    async function handleNewChatInitiate(){
+        let data = {
+            name: "new chat " + String(new Date()),
+            userPrompts: [],
+            gptResponse: [],
+            folderId: ""
+        }
+
+        await addDoc(collection(db, `users/${userInfo.uid}/chats`), data)
+        .then((doc)=>{
+            console.log(doc.id)
+            setDefaultDoc(data)
+            let newChatList = chatList
+            newChatList[doc.id] = data
+            setChatList(newChatList)
+        }).catch((error)=>{
+            console.log(error)
+        })
     }
 
     function handleOpenDialog() {
@@ -102,18 +159,18 @@ function Chat(){
 
     const pinnedChatsContainer = pinnedChats?.map((chat_id)=>{
         return (
-            <li key={chat_id+"li"} className="listItem"> 
+            <li key={chat_id+"li"} className="listItem" onClick={() => setDefaultDoc(chatList[chat_id])}> 
                 <svg key={chat_id}
                     stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
                 <span key={chat_id}>
-                    {chats[chat_id]}
+                    {chatList[chat_id] && chatList[chat_id]?.name}
                 </span>
             </li>
         )
     })
-    
+
     const foldersContainer = folders?.map((folderInfo, index) => {
         return (
         <details>
@@ -172,7 +229,7 @@ function Chat(){
                 <div className="navSection" style={{display:openNav?"flex":"none"}}>
                     <div className="flexDiv">
                         <div className="navMenu">
-                            <div className="newChatButton">
+                            <div className="newChatButton" onClick={handleNewChatInitiate}>
                                 <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                 New chat
                             </div>
@@ -271,8 +328,8 @@ function Chat(){
                                             </span>
                                                 <img className="profileImage rounded-sm" alt="User"
                                                 height="40px"
-                                                src={userInfo.photoUrl} decoding="async" dataNimg="intrinsic"
-                                                srcset={userInfo.photoUrl} />
+                                                src="https://images.unsplash.com/photo-1605106901227-991bd663255c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHNxdWFyZSUyMGRwfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60" decoding="async" dataNimg="intrinsic"
+                                                srcSet="https://images.unsplash.com/photo-1605106901227-991bd663255c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHNxdWFyZSUyMGRwfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60" />
                                             </span>
                                     </div>
                                 </div>
@@ -287,7 +344,7 @@ function Chat(){
                     </div>
                 </div>
                 <div className="chatContainer">
-                    <ChatContainer />
+                    <ChatContainer defaultDoc={defaultDoc} />
                 </div>
             </div>
         </div>

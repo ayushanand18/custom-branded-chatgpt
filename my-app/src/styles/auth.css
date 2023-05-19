@@ -418,6 +418,9 @@
     font-family: var(--font-family);
     margin-top: var(--spacing-3);
 }
+.loginSubmit:disabled {
+    background-color: rgb(111, 119, 128, 0.8);
+}
 .buttonGroup {
     white-space: normal;
     color: var(--font-default-color);

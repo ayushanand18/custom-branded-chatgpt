@@ -43,6 +43,8 @@ function Login() {
         return <Chat />
     }
     
+    document.title = "Login to ChatGPT"
+    
     function handleEmailChange(event) {
         setEmail(event.target.value);
     }
@@ -52,11 +54,21 @@ function Login() {
     }
 
     async function handleLogin(event) {
-        event.preventDefault();
+        event.preventDefault()
+        event.target.setAttribute("disabled", "true")
         if(email==="" || password==="") {
-            setErrorMessage("Incorrect email or password");
-            setIsError(true);
-            return;
+            setErrorMessage("Incorrect email or password")
+            setIsError(true)
+            event.target.removeAttribute("disabled")
+            return
+        }
+        if(!String(email).toLowerCase().match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        )) {
+            setErrorMessage("Invalid Email")
+            setIsError(true)
+            event.target.removeAttribute("disabled")
+            return
         }
         try {
             await signInWithEmailAndPassword(auth, email, password);
@@ -64,6 +76,7 @@ function Login() {
         catch (err) {
             setErrorMessage("Incorrect email or password");
             setIsError(true);
+            event.target.removeAttribute("disabled")
             return;
         }
         navigate('/', { replace: true });
@@ -72,7 +85,9 @@ function Login() {
     return (
         <div className="wrapper">
             <header className="header">
-                <img src={logo} className="appLogo" alt="logo"/>
+                <Link to="/">
+                    <img src={logo} className="appLogo" alt="logo"/>
+                </Link>
             </header>
             <main className="main">
                 <section className="section">

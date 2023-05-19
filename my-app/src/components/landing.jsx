@@ -1,9 +1,13 @@
-import React from "react";
+import { React, useEffect } from "react";
 import {Link} from "react-router-dom";
 import '../styles/landing.css';
 import Logo from '../assets/logo.svg';
 
 function LandingApp() {
+    useEffect (()=>{
+        document.title = "Welcome to ChatGPT"
+    })
+    
     return (
         <div className="flexHome">
             <div className="flexMain">
