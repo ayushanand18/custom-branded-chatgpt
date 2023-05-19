@@ -129,11 +129,11 @@ function Chat(){
         return (new Array(2).fill(String(prompt)+" ").reduce((acc, t) => acc+t))
     }
 
-    async function handleSubmitPrompt(event) {
+    async function handleSubmitPrompt(event, prompt=promptValue) {
         event.preventDefault()
         let newDefaultDoc = defaultDoc;
-        if(newDefaultDoc.userPrompts) newDefaultDoc.userPrompts.push(promptValue)
-        else newDefaultDoc['userPrompts'] = [promptValue]
+        if(newDefaultDoc.userPrompts) newDefaultDoc.userPrompts.push(prompt)
+        else newDefaultDoc['userPrompts'] = [prompt]
         
         setPromptValue("")
         setDefaultDoc(newDefaultDoc)
@@ -173,6 +173,12 @@ function Chat(){
     function handleSettingsOpen() {
         setSettingsOpen(true);
         setIsOverlay(true);
+    }
+
+    function handlePromptExample(event) {
+        let prompt = event.target.textContent
+        setPromptValue(prompt)
+        handleSubmitPrompt(event, prompt.split("\"")[1])
     }
 
     function handleCloseSettings(){
@@ -424,6 +430,7 @@ function Chat(){
                         promptValue={promptValue}
                         handleTextChange={handleTextChange}
                         bottomRef={bottomRef}
+                        handlePromptExample={handlePromptExample}
                         />
                 </div>
             </div>
