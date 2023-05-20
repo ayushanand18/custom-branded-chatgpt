@@ -312,7 +312,7 @@ function Chat(){
                             <line x1="3" y1="18" x2="21" y2="18"></line>
                         </svg>
                     </button>
-                    <h1 className="flexTextNormal">ChatGPT</h1>
+                    <h1 className="flexTextNormal">{(defaultDoc && defaultDoc.name) || `ChatGPT` }</h1>
                     {/* 
                     hiding this add button for now
                     <button type="button" className="buttonAdd">
