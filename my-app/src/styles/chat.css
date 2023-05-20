@@ -149,82 +149,25 @@
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 6;
+    z-index: 5;
     background-color: rgb(167, 167, 189, .7);
 }
 .container{
-    z-index: 1;
     -webkit-text-size-adjust: 100%;
     font-feature-settings: normal;
     font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
     font-variation-settings: normal;
     tab-size: 4;
-    --color-primary: #19c37d;
-    --color-secondary: #715fde;
-    --color-error: #ef4146;
-    --gradient-primary: linear-gradient(90deg,#a29bd4,#989fdd);
-    --text-primary: #202123;
-    --text-default: #353740;
-    --text-secondary: #6e6e80;
-    --text-disabled: #acacbe;
-    --text-error: var(--color-error);
     color-scheme: light;
     line-height: inherit;
     border: 0 solid #d9d9e3;
     box-sizing: border-box;
-    --tw-border-spacing-x: 0;
-    --tw-border-spacing-y: 0;
-    --tw-translate-x: 0;
-    --tw-translate-y: 0;
-    --tw-rotate: 0;
-    --tw-skew-x: 0;
-    --tw-skew-y: 0;
-    --tw-scale-x: 1;
-    --tw-scale-y: 1;
-    --tw-pan-x: ;
-    --tw-pan-y: ;
-    --tw-pinch-zoom: ;
-    --tw-scroll-snap-strictness: proximity;
-    --tw-gradient-from-position: ;
-    --tw-gradient-via-position: ;
-    --tw-gradient-to-position: ;
-    --tw-ordinal: ;
-    --tw-slashed-zero: ;
-    --tw-numeric-figure: ;
-    --tw-numeric-spacing: ;
-    --tw-numeric-fraction: ;
-    --tw-ring-inset: ;
-    --tw-ring-offset-width: 0px;
-    --tw-ring-offset-color: #fff;
-    --tw-ring-color: rgba(69,89,164,.5);
-    --tw-ring-offset-shadow: 0 0 transparent;
-    --tw-ring-shadow: 0 0 transparent;
-    --tw-shadow: 0 0 transparent;
-    --tw-shadow-colored: 0 0 transparent;
-    --tw-blur: ;
-    --tw-brightness: ;
-    --tw-contrast: ;
-    --tw-grayscale: ;
-    --tw-hue-rotate: ;
-    --tw-invert: ;
-    --tw-saturate: ;
-    --tw-sepia: ;
-    --tw-drop-shadow: ;
-    --tw-backdrop-blur: ;
-    --tw-backdrop-brightness: ;
-    --tw-backdrop-contrast: ;
-    --tw-backdrop-grayscale: ;
-    --tw-backdrop-hue-rotate: ;
-    --tw-backdrop-invert: ;
-    --tw-backdrop-opacity: ;
-    --tw-backdrop-saturate: ;
-    --tw-backdrop-sepia: ;
     position: relative;
-    z-index: 0;
     display: flex;
     height: 100%;
     width: 100%;
     overflow: hidden;
+    z-index: 6;
 }
 .navSection {
     -webkit-text-size-adjust: 100%;
@@ -1474,9 +1417,14 @@ summary{ list-style: none }
 .stickyTopbar {
     display: none;
 }
-@media only screen and (max-width: 900px) {
+.containerWrapper {
+    height: calc(100vh - 73px);
+}
+@media only screen and (max-width: 800px) {
     .navSection {
         display: none;
+        position: absolute;
+        z-index: 6;
     }
     .stickyTopbar {
         display: flex;
@@ -1489,7 +1437,8 @@ summary{ list-style: none }
         line-height: inherit;
         border: 0 solid #d9d9e3;
         box-sizing: border-box;
-        position: sticky;
+        width: 100%;
+        position: absolute;
         top: 0;
         z-index: 4;
         display: flex;
@@ -1591,12 +1540,11 @@ summary{ list-style: none }
         height: 1.5rem;
         width: 1.5rem;
     }
-    .container {
-        height: calc(100vh - 43px);
+    .containerWrapper {
+        margin-top: 40px;
+        height: calc(100vh - 110px);
     }
-}
-.containerWrapper {
-    height: calc(100vh - 73px);
+
 }
 .settingContainer {
     position: absolute;

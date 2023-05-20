@@ -39,6 +39,7 @@ function Chat(){
     const [chatList, setChatList] = useState({})
     const [defaultDoc, setDefaultDoc] = useState([])
     const [promptValue, setPromptValue] = useState("")
+    const [isOverlayTwo, setIsOverlayTwo] = useState(false)
     const bottomRef = useRef()
     const [messageCount, setMessageCount] = useState(0)
     const [authState, setAuthState] = useState({
@@ -58,7 +59,7 @@ function Chat(){
     }, [])
 
     useEffect(() => {
-        if(window.innerWidth >900 ) setOpenNav(true);
+        if(window.innerWidth >800 ) setOpenNav(true);
     }, []);
 
     useEffect(() => {
@@ -168,6 +169,7 @@ function Chat(){
     function handleOpenNav() {
         const nav = openNav^true;
         setOpenNav(nav);
+        setIsOverlayTwo(true);
     }
 
     function handleSettingsOpen() {
@@ -276,26 +278,26 @@ function Chat(){
                 </div>
             </div>
             <div className="overlay" style={{display:isOverlay?"block":"none"}}></div>
-            <div className="stickyTopbar">
-                <button type="button" onClick={handleOpenNav} className="inlineFlex">
-                    <span className="sr-only">Open sidebar</span>
-                    <svg stroke="currentColor" fill="none" strokeWidth="1.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                </button>
-                <h1 className="flexTextNormal">ChatGPT</h1>
-                {/* 
-                hiding this add button for now
-                <button type="button" className="buttonAdd">
-                    <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" className="h-6 w-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                </button> */}
-            </div>
             <div className="container">
+                <div className="stickyTopbar">
+                    <button type="button" onClick={handleOpenNav} className="inlineFlex">
+                        <span className="sr-only">Open sidebar</span>
+                        <svg stroke="currentColor" fill="none" strokeWidth="1.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h1 className="flexTextNormal">ChatGPT</h1>
+                    {/* 
+                    hiding this add button for now
+                    <button type="button" className="buttonAdd">
+                        <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" className="h-6 w-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button> */}
+                </div>
                 <div className="navSection" style={{display:openNav?"flex":"none"}}>
                     <div className="flexDiv">
                         <div className="navMenu">
@@ -424,6 +426,11 @@ function Chat(){
                     </div>
                 </div>
                 <div className="chatContainer">
+                    <div className="overlay" style={{display:isOverlayTwo?"block":"none"}} 
+                        onClick={()=>{
+                            setOpenNav(false);
+                            setIsOverlayTwo(false)
+                        }}></div>
                     <ChatContainer 
                         defaultDoc={defaultDoc} 
                         handleSubmitPrompt={handleSubmitPrompt}
