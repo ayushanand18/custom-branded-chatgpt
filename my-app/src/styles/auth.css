@@ -187,6 +187,7 @@
     padding: 32px 0 0;
     flex: 0 0 auto;
     flex-grow: 1;
+    max-width: 90%;
 }
 .main .section {
     box-sizing: border-box;

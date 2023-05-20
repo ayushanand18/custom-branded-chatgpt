@@ -67,8 +67,9 @@ function Chat(){
     }, [messageCount]);
 
     async function handleDataFetch(user) {
-        const chatsRef = collection(db, `users/${user.uid}/chats`);
-        const userData = await getDoc(doc(db, `users`,`${user.uid}`))
+        if(!user) return;
+        const chatsRef = collection(db, `users/${user?.uid}/chats`);
+        const userData = await getDoc(doc(db, `users`,`${user?.uid}`))
         const querySnapshot = await getDocs(chatsRef);
 
         let chatDocs = {}
@@ -100,8 +101,9 @@ function Chat(){
     }
 
     function handleLogout (){
-        signOut(auth);
-        navigate('/', { replace: true });
+        signOut(auth).then(()=>{
+            navigate('/', { replace: true });
+        });
     }
 
     async function handleNewChatInitiate(){
