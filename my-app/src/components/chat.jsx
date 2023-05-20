@@ -88,6 +88,26 @@ function Chat(){
         setMessageCount(messageCount+1)
     }
 
+    async function handleChatPin(event, chat_id) {
+        if(pinnedChats?.includes(chat_id)) return;
+        let newPinnedChats = pinnedChats
+        newPinnedChats.push(chat_id)
+        setPinnedChats(newPinnedChats)
+        await updateDoc(doc(db, `users/`,`${userInfo.uid}`), {
+            pinnedChats: newPinnedChats
+        })
+    }
+
+    async function handleChatUnpin(event, chat_id) {
+        if(!pinnedChats?.includes(chat_id)) return;
+        let newPinnedChats = pinnedChats
+        newPinnedChats.splice(newPinnedChats.indexOf(chat_id), 1)
+        setPinnedChats(newPinnedChats)
+        await updateDoc(doc(db, `users/`,`${userInfo.uid}`), {
+            pinnedChats: newPinnedChats
+        })
+    }
+
     // pending: this feature is left
     function handleUpdateFolders(folderNames, folderIds) {
         let foldersConstruct = []
@@ -221,9 +241,10 @@ function Chat(){
                     stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
-                <span key={chat_id}>
+                <span key={chat_id} className="span">
                     {chatList[chat_id] && chatList[chat_id]?.name}
                 </span>
+                <span className="rounded-md" onClick={(event)=>handleChatUnpin(event, chat_id)}>UNPIN</span>
             </li>
         )
     })
@@ -260,9 +281,10 @@ function Chat(){
                     stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
-                <span key={index}>
+                <span key={index} className="span">
                     {chatList[chat_id]?.name}
                 </span>
+                <span className="rounded-md" onClick={(event)=>handleChatPin(event, chat_id)}>PIN</span>
             </li>
         )
     })
