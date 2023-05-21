@@ -67,6 +67,45 @@ function Chat(){
         bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }, [messageCount]);
 
+    function handleChatSort(category) {
+        let newChatList = chatList
+
+        switch(category.target.value){
+            case "asc-date":
+                console.log(newChatList)
+                newChatList = Object.fromEntries(
+                    Object.entries(newChatList).sort(
+                        ([,a],[,b])=>(a.time.seconds<b.time.seconds)?1:(a.time.seconds>b.time.seconds)?-1:0
+                    )
+                )
+                break
+            case "desc-date":
+                newChatList = Object.fromEntries(
+                    Object.entries(newChatList).sort(
+                        ([,a],[,b])=>(a.time.seconds<b.time.seconds)?-1:(a.time.seconds>b.time.seconds)?1:0
+                    )
+                )
+                break
+            case "asc-name":
+                newChatList = Object.fromEntries(
+                    Object.entries(newChatList).sort(
+                        ([,a],[,b])=>(a.name.toLowerCase()<b.name.toLowerCase())?1:(a.name.toLowerCase()>b.name.toLowerCase())?-1:0
+                    )
+                )
+                break
+            case "desc-name":
+                newChatList = Object.fromEntries(
+                    Object.entries(newChatList).sort(
+                        ([,a],[,b])=>(a.name.toLowerCase()<b.name.toLowerCase())?-1:(a.name.toLowerCase()>b.name.toLowerCase())?1:0
+                    )
+                )
+                break
+            default: break
+        }
+        console.log(newChatList)
+        setChatList(newChatList)
+    }
+
     async function handleDataFetch(user) {
         if(!user) return;
         const chatsRef = collection(db, `users/${user?.uid}/chats`);
@@ -79,6 +118,7 @@ function Chat(){
             chatDocs[doc.id].uid = doc.id
             // folders[doc.data().folderId]?.chats.push(doc.id)
         })
+        console.log(chatDocs)
 
         setChatList(chatDocs)
         setDefaultDoc(chatDocs[userData.data().pinnedChats[0]])
@@ -154,7 +194,8 @@ function Chat(){
             name: "new chat " + String(new Date()),
             userPrompts: [],
             gptResponse: [],
-            folderId: ""
+            folderId: "",
+            time: new Date(),
         }
 
         await addDoc(collection(db, `users/${userInfo.uid}/chats`), data)
@@ -399,6 +440,15 @@ function Chat(){
                             <div className="stickyLabel">
                             <div className="labelHeading">
                                 All chats
+                                <span>
+                                    Sort by:
+                                    <select onChange={handleChatSort}>
+                                        <option value="asc-date" onClick={()=>handleChatSort("asc-date")}>Asc: Date</option>
+                                        <option value="desc-date" onClick={()=>handleChatSort("desc-date")}>Desc: Date</option>
+                                        <option value="asc-name" onClick={()=>handleChatSort("asc-name")}>Asc: Name</option>
+                                        <option value="desc-date" onClick={()=>handleChatSort("desc-name")}>Desc: Date</option>
+                                    </select>
+                                </span>
                             </div>
                         </div>
                         <div className="folders">
