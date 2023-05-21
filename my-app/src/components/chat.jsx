@@ -16,7 +16,6 @@ function Chat(){
         appId: process.env.REACT_APP_FIREBASE_APP_ID,
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -38,10 +37,12 @@ function Chat(){
     const [userName, setUserName] = useState(userInfo.displayName);
     const [chatList, setChatList] = useState({})
     const [defaultDoc, setDefaultDoc] = useState([])
+    const [contentEditable, setContentEditable] = useState(false)
     const [promptValue, setPromptValue] = useState("")
     const [isOverlayTwo, setIsOverlayTwo] = useState(false)
     const bottomRef = useRef()
     const [messageCount, setMessageCount] = useState(0)
+    const currentDoc = useRef()
     const [authState, setAuthState] = useState({
         isSignedIn: false,
         pending: true,
@@ -106,6 +107,28 @@ function Chat(){
         await updateDoc(doc(db, `users/`,`${userInfo.uid}`), {
             pinnedChats: newPinnedChats
         })
+    }
+
+    function handleChatPencil(event){
+        currentDoc.current.setAttribute("contenteditable", "true")
+        setContentEditable(true)
+    }
+
+    async function handleChatRename(event, chat_id) {
+        let newDoc = defaultDoc
+        newDoc.name = currentDoc.current.textContent
+        console.log(currentDoc.current.textContent)
+        setDefaultDoc(newDoc)
+
+        let newChatList = chatList
+        newChatList[newDoc?.uid] = newDoc
+        setChatList(newChatList)
+        await updateDoc(doc(db, `users/${userInfo?.uid}/chats`, newDoc?.uid), {
+            name: newDoc?.name
+        })
+
+        setContentEditable(false)
+        currentDoc.current.removeAttribute("contenteditable")
     }
 
     // pending: this feature is left
@@ -329,6 +352,29 @@ function Chat(){
                                 <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                 New chat
                             </div>
+
+                            <div className="stickyLabel">
+                                <div className="labelHeading">
+                                    Opened Chat
+                                </div>
+                            </div>
+                            <ol>
+                                <li className="listItem"> 
+                                    <svg
+                                        stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <span className="span" ref={currentDoc}>
+                                        {defaultDoc?.name}
+                                    </span>
+                                    <span style={{display:contentEditable?"none":"flex"}} className="rounded-md" onClick={(event)=>handleChatPencil(event)}>
+                                        RENAME
+                                    </span>
+                                    <span style={{display:contentEditable?"flex":"none", backgroundColor:"#43e500"}} className="rounded-md" onClick={(event)=>handleChatRename(event)}>
+                                        DONE
+                                    </span>
+                                </li>
+                            </ol>
                             <div className="stickyLabel">
                                 <div className="labelHeading">
                                     Pinned chats
