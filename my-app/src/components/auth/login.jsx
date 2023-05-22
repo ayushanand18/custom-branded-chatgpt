@@ -35,6 +35,7 @@ function Login() {
             setAuthState({ user, pending: false, isSignedIn: !!user })
         )
         return () => unregisterAuthObserver()
+        // eslint-disable-next-line
     }, [])
 
     if(authState.pending) return <h1>working...</h1>
@@ -106,7 +107,7 @@ function Login() {
                         <div className="buttonGroup">
                             <button onClick={handleLogin} className="loginSubmit">Login</button>
                         </div>
-                        <div className="signupLink">
+                        <div style={{display: "none"}} className="signupLink">
                             Don't have an account?
                             &nbsp;
                             <Link to="/auth/signup">Sign up</Link>

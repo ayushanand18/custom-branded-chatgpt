@@ -34,14 +34,17 @@ function Signup() {
             setAuthState({ user, pending: false, isSignedIn: !!user })
         )
         return () => unregisterAuthObserver()
+        // eslint-disable-next-line
     }, [])
 
     document.title = "Signup to ChatGPT"
 
-    if(authState.pending) return <h1>working...</h1>
+    // re-reouting to login route since we do not allow sign-ins for now
+    if(authState.pending) navigate('/auth/login', { replace: true })
     else if(authState.isSignedIn) {
         navigate('/', { replace: true });
     }
+    else navigate('/auth/login', { replace: true })
 
     function handleEmailChange(event) {
         setEmail(event.target.value);
