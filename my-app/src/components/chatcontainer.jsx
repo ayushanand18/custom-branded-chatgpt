@@ -3,7 +3,7 @@ import Logo from '../assets/logo.svg';
 import '../styles/chat.css';
 
 function ChatContainer({defaultDoc,handleSubmitPrompt,promptValue,handleTextChange,bottomRef,handlePromptExample}){
-    document.title = defaultDoc.name;
+    document.title = defaultDoc?.name;
     const defaultContainer = (
         <div className="defaultContainer">
             <h1>
@@ -77,9 +77,11 @@ function ChatContainer({defaultDoc,handleSubmitPrompt,promptValue,handleTextChan
     })
 
     return (
+        // <Provider config={rollbarConfig}>
+        // <ErrorBoundary>
         <div className="containerWrapper">
             <div className="chatList">
-                {(defaultDoc.userPrompts?.length && renderedDiv) || defaultContainer}
+                {(defaultDoc?.userPrompts?.length && renderedDiv) || defaultContainer}
                 <div ref={bottomRef}></div>
             </div>
 
@@ -109,6 +111,8 @@ function ChatContainer({defaultDoc,handleSubmitPrompt,promptValue,handleTextChan
                 </form>
             </div>
         </div>
+        // </ErrorBoundary>
+        // </Provider>
     )
 }
 

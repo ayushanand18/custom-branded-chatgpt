@@ -162,7 +162,7 @@ function Chat(){
 
     async function handleChatRename(event, chat_id) {
         let newDoc = defaultDoc
-        newDoc.name = currentDoc.current.textContent
+        newDoc['name'] = currentDoc.current.textContent
         console.log(currentDoc.current.textContent)
         setDefaultDoc(newDoc)
 
@@ -248,7 +248,7 @@ function Chat(){
     async function handleSubmitPrompt(event, prompt=promptValue) {
         event.preventDefault()
         let newDefaultDoc = defaultDoc;
-        if(newDefaultDoc.userPrompts) newDefaultDoc.userPrompts.push(prompt)
+        if(newDefaultDoc?.userPrompts) newDefaultDoc.userPrompts.push(prompt)
         else newDefaultDoc['userPrompts'] = [prompt]
         
         setPromptValue("")
@@ -436,7 +436,7 @@ function Chat(){
                             <line x1="3" y1="18" x2="21" y2="18"></line>
                         </svg>
                     </button>
-                    <h1 className="flexTextNormal">{(defaultDoc && defaultDoc.name) || `ChatGPT` }</h1>
+                    <h1 className="flexTextNormal">{(defaultDoc && defaultDoc?.name) || `ChatGPT` }</h1>
                     {/* 
                     hiding this add button for now
                     <button type="button" className="buttonAdd">
