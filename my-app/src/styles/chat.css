@@ -454,6 +454,9 @@
     justify-content: space-between;
     align-items: center;
 }
+.context-menu select {
+    width: 100%;
+}
 .listItem {
     padding-left: .75rem;
     cursor: pointer;
@@ -472,13 +475,44 @@
     position: relative;
     z-index: 15;
     opacity: 1;
+    min-height: 2.25rem;
     height: auto;
     transform: none;
     transform-origin: 50% 50% 0px;
-    line-height: 2.25rem;
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+.addFolder {
+    vertical-align: middle;
+    display: flex;
+    width: max-content;
+    gap: 0.3rem;
+    flex-direction: row;
+}
+.addFolder input {
+    line-height: 1.2rem;
+    width: 68%;
+    padding: 0 2px 0 4px;
+    vertical-align: middle;
+}
+.addFolder button {
+    background-color: greenyellow;
+    min-width: 35px;
+    height: 1.8rem;
+    font-size: 26px;
+    font-weight: 200;
+    vertical-align: middle;
+    display: inline;
+}
+.select {
+    background: inherit;
+    color: white;
+    border-radius: 30px;
+    margin: 0px 5px 0px 5px;
+}
+.select option {
+    color: black;
 }
 ol{
     -webkit-text-size-adjust: 100%;
@@ -521,6 +555,13 @@ ol div{
     padding-right: .75rem;
     padding-bottom: .75rem;
     padding-top: .75rem;
+}
+.listItem .context-menu {
+    width: 100%;
+    display: flex;
+    gap: 0.3rem;
+    flex-direction: column;
+    align-items: flex-start;
 }
 .listItem:hover {
     background-color: rgba(42,43,50,1);
