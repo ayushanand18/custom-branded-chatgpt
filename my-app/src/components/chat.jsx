@@ -217,6 +217,7 @@ function Chat(){
         });
     }
 
+    // pending: need to update the feature
     async function handleNewChatInitiate(){
         let data = {
             name: "new chat " + String(new Date()),
@@ -337,7 +338,19 @@ function Chat(){
                 <span key={chat_id} className="span">
                     {chatList[chat_id] && chatList[chat_id]?.name}
                 </span>
-                <span className="rounded-md" onClick={(event)=>handleChatUnpin(event, chat_id)}>UNPIN</span>
+                <span className="rounded-md" onClick={(event)=>handleChatUnpin(event, chat_id)} style={{backgroundColor: "transparent"}}>
+                    <svg id="SvgjsSvg1001" width="24" height="24" xmlns="http://www.w3.org/2000/svg" version="1.1" style={{transform: "rotate(-45deg)", color: "rgb(255, 255, 255)", overflow: "visible"}}>
+                        <defs id="SvgjsDefs1002"/>
+                        <g id="SvgjsG1008">
+                            <svg xmlns="http://www.w3.org/2000/svg" baseProfile="tiny" version="1.2" viewBox="0 0 24 24" width="20" height="20">
+                            <path d="M16.729 4.271a1 1 0 0 0-1.414-.004 1.004 1.004 0 0 0-.225.355c-.832 1.736-1.748 2.715-2.904 3.293C10.889 8.555 9.4 9 7 9a1.006 1.006 0 0 0-.923.617 1.001 1.001 0 0 0 .217 1.09l3.243 3.243L5 20l6.05-4.537 3.242 3.242a.975.975 0 0 0 .326.217c.122.051.252.078.382.078s.26-.027.382-.078A.996.996 0 0 0 16 18c0-2.4.444-3.889 1.083-5.166.577-1.156 1.556-2.072 3.293-2.904a.983.983 0 0 0 .354-.225 1 1 0 0 0-.004-1.414l-3.997-4.02z" fill="#fff" className="color000 svgShape"/>
+                            </svg>
+                        </g>
+                        <svg height="30" width="30">
+                            <line x1="-2" y1="8" x2="20" y2="12" style={{stroke:"#fff",strokeWidth:"3"}}/>
+                        </svg>
+                    </svg>
+                </span>
             </li>
         )
     })
@@ -378,15 +391,27 @@ function Chat(){
                 style={{flexDirection:"column"}}
             >
                 <div style={{width: "100%", flexDirection:"row", background:"inherit"}}>
+                    
                     <img key={index}
-                        src="https://cdn-icons-png.flaticon.com/512/4044/4044064.png" alt='three-dots' 
+                        src="https://www.iconpacks.net/icons/4/free-icon-open-folder-11477.png" alt='three-dots' 
                         height='22' style={{filter: "invert(100%)", height: "16px", padding: "0px 5px 0px 0px"}}
                         onClick={()=>{chatList[chat_id]['show'] ^= true;}}
                         />
                     <span key={index} className="span">
                         {chatList[chat_id]?.name}
                     </span>
-                    <span className="rounded-md" onClick={(event)=>handleChatPin(event, chat_id)}>PIN</span>
+                    <span 
+                        className="rounded-md" 
+                        onClick={(event)=>handleChatPin(event, chat_id)} 
+                        style={{background: "transparent"}}>
+                            <svg id="SvgjsSvg1001" width="24" height="24" xmlns="http://www.w3.org/2000/svg" version="1.1" 
+                                style={{transform:"rotate(-45deg)", color: "#fff", overflow:"visible"}}>
+                                    <defs id="SvgjsDefs1002"></defs>
+                                    <g id="SvgjsG1008">
+                                    <svg xmlns="http://www.w3.org/2000/svg" baseProfile="tiny" version="1.2" viewBox="0 0 24 24" width="20" height="20" >
+                                    <path d="M16.729 4.271a1 1 0 0 0-1.414-.004 1.004 1.004 0 0 0-.225.355c-.832 1.736-1.748 2.715-2.904 3.293C10.889 8.555 9.4 9 7 9a1.006 1.006 0 0 0-.923.617 1.001 1.001 0 0 0 .217 1.09l3.243 3.243L5 20l6.05-4.537 3.242 3.242a.975.975 0 0 0 .326.217c.122.051.252.078.382.078s.26-.027.382-.078A.996.996 0 0 0 16 18c0-2.4.444-3.889 1.083-5.166.577-1.156 1.556-2.072 3.293-2.904a.983.983 0 0 0 .354-.225 1 1 0 0 0-.004-1.414l-3.997-4.02z" fill="#fff" class="color000 svgShape"></path>
+                            </svg></g></svg>
+                    </span>
                 </div>
                 <div className="context-menu" style={{display: chatList[chat_id]?.show?"flex":"none"}}>
                     <span className="stickyHead">Add to folder</span>
