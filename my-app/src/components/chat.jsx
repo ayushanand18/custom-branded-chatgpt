@@ -270,6 +270,7 @@ function Chat(){
         setMessageCount(messageCount+1)
     }
 
+    // pending: enable delete chat feature
     function handleDeleteChat(){
 
     }
