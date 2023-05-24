@@ -1,7 +1,7 @@
 import { React, useState, useEffect, useRef } from "react";
 import { initializeApp } from "firebase/app";
 import { getAuth, signOut, updateProfile } from "firebase/auth";
-import { doc, addDoc, getDoc, getDocs, getFirestore, collection, updateDoc } from "firebase/firestore";
+import { doc, addDoc, getDoc, deleteDoc, getDocs, getFirestore, collection, updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import ChatContainer from './chatcontainer';
 import '../styles/chat.css';
@@ -291,9 +291,20 @@ function Chat(){
         setMessageCount(messageCount+1)
     }
 
-    // pending: enable delete chat feature
-    function handleDeleteChat(){
-        
+    async function handleDeleteChat(chat_id){
+        if(defaultDoc?.uid===chat_id) {
+            // you also need to reset the new defaultDoc
+            setDefaultDoc(chatList[Object.keys(chatList)[0]])
+        }
+        delete chatList[chat_id]
+        setChatList(chatList)
+        if(pinnedChats.includes(chat_id))
+            pinnedChats.remove(pinnedChats.indexOf(chat_id))
+        await deleteDoc(doc(db, `users/${authState.user.uid}/chats`, chat_id))
+        .then(()=>{
+            console.log("deleted!")
+        })
+        .catch((error)=>{console.log(error)})
     }
 
     function handleOpenDialog() {
@@ -386,10 +397,12 @@ function Chat(){
         <details>
             <summary>
                 <li key={folder_id+"li"} style={{display: "flex",justifyContent: "space-between",alignItems: "center"}} className="listItem">
-                    <svg key={folder_id} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128" width="36" height="36">
-                        <path stroke="#fff" strokeLinecap="round" strokeWidth="6" d="M26 45.5C26 35.835 33.835 28 43.5 28V28L55.3399 28C58.7317 28 61.7549 30.1389 62.8838 33.3374L65.1727 39.8226C66.2737 42.9422 69.1813 45.0623 72.4881 45.1568L84.5 45.5V45.5C94.0831 45.2262 102 52.9202 102 62.5071L102 74.5V80C102 90.4934 93.4934 99 83 99V99L64 99L45 99V99C34.5066 99 26 90.4934 26 80L26 66L26 45.5Z" ></path>
-                    </svg>
-                    {folders[folder_id]?.name}
+                    <span style={{display:"flex", gap:".4rem", alignItems: "center"}}>
+                        <svg key={folder_id} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128" width="36" height="36">
+                            <path stroke="#fff" strokeLinecap="round" strokeWidth="6" d="M26 45.5C26 35.835 33.835 28 43.5 28V28L55.3399 28C58.7317 28 61.7549 30.1389 62.8838 33.3374L65.1727 39.8226C66.2737 42.9422 69.1813 45.0623 72.4881 45.1568L84.5 45.5V45.5C94.0831 45.2262 102 52.9202 102 62.5071L102 74.5V80C102 90.4934 93.4934 99 83 99V99L64 99L45 99V99C34.5066 99 26 90.4934 26 80L26 66L26 45.5Z" ></path>
+                        </svg>
+                        {folders[folder_id]?.name}
+                    </span>
                     <span onClick={()=>handleDeleteFolder(folder_id)}>
                         <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
                             <polyline points="3 6 5 6 21 6"></polyline>
@@ -418,33 +431,47 @@ function Chat(){
 
     const allChats = Object.keys(chatList)?.map((chat_id, index) => {
         return (
-            <li key={index+"li"} className={(chat_id===defaultDoc?.uid)?'listItem hovered':'listItem'} onClick={() => {
+            <li key={index+"li"} className={(chat_id===defaultDoc?.uid)?'listItem hovered':'listItem'} 
+                style={{flexDirection:"column"}}
+                onClick={() => {
                     setDefaultDoc(chatList[chat_id]) 
                     setMessageCount(messageCount+1)
                 }}
-                style={{flexDirection:"column"}}
             >
                 <div style={{width: "100%", flexDirection:"row", background:"inherit"}}>
-                    
-                    <img key={index}
-                        src="https://www.iconpacks.net/icons/4/free-icon-open-folder-11477.png" alt='three-dots' 
-                        height='22' style={{filter: "invert(100%)", height: "16px", padding: "0px 5px 0px 0px"}}
-                        onClick={()=>{chatList[chat_id]['show'] ^= true;}}
-                        />
-                    <span key={index} className="span">
-                        {chatList[chat_id]?.name}
+                    <span style={{display:"flex", gap:".4rem", alignItems: "center"}}>
+                        <img key={index}
+                            src="https://www.iconpacks.net/icons/4/free-icon-open-folder-11477.png" alt='three-dots' 
+                            height='22' style={{filter: "invert(100%)", height: "16px", padding: "0px 5px 0px 0px"}}
+                            onClick={()=>{chatList[chat_id]['show'] ^= true;}}
+                            />
+                        <span key={index} className="span" >
+                            {chatList[chat_id]?.name}
+                        </span>
                     </span>
-                    <span 
-                        className="rounded-md" 
-                        onClick={(event)=>handleChatPin(event, chat_id)} 
-                        style={{background: "transparent"}}>
-                            <svg id="SvgjsSvg1001" width="24" height="24" xmlns="http://www.w3.org/2000/svg" version="1.1" 
-                                style={{transform:"rotate(-45deg)", color: "#fff", overflow:"visible"}}>
-                                    <defs id="SvgjsDefs1002"></defs>
-                                    <g id="SvgjsG1008">
-                                    <svg xmlns="http://www.w3.org/2000/svg" baseProfile="tiny" version="1.2" viewBox="0 0 24 24" width="20" height="20" >
-                                    <path d="M16.729 4.271a1 1 0 0 0-1.414-.004 1.004 1.004 0 0 0-.225.355c-.832 1.736-1.748 2.715-2.904 3.293C10.889 8.555 9.4 9 7 9a1.006 1.006 0 0 0-.923.617 1.001 1.001 0 0 0 .217 1.09l3.243 3.243L5 20l6.05-4.537 3.242 3.242a.975.975 0 0 0 .326.217c.122.051.252.078.382.078s.26-.027.382-.078A.996.996 0 0 0 16 18c0-2.4.444-3.889 1.083-5.166.577-1.156 1.556-2.072 3.293-2.904a.983.983 0 0 0 .354-.225 1 1 0 0 0-.004-1.414l-3.997-4.02z" fill="#fff" class="color000 svgShape"></path>
-                            </svg></g></svg>
+                    <span>
+                        <span 
+                            onClick={(event)=>handleChatPin(event, chat_id)} 
+                            style={{background: "transparent"}}>
+                                <svg id="SvgjsSvg1001" width="24" height="24" xmlns="http://www.w3.org/2000/svg" version="1.1" 
+                                    style={{transform:"rotate(-45deg)", color: "#fff", overflow:"visible"}}>
+                                        <defs id="SvgjsDefs1002"></defs>
+                                        <g id="SvgjsG1008">
+                                        <svg xmlns="http://www.w3.org/2000/svg" baseProfile="tiny" version="1.2" viewBox="0 0 24 24" width="16" height="16" >
+                                        <path d="M16.729 4.271a1 1 0 0 0-1.414-.004 1.004 1.004 0 0 0-.225.355c-.832 1.736-1.748 2.715-2.904 3.293C10.889 8.555 9.4 9 7 9a1.006 1.006 0 0 0-.923.617 1.001 1.001 0 0 0 .217 1.09l3.243 3.243L5 20l6.05-4.537 3.242 3.242a.975.975 0 0 0 .326.217c.122.051.252.078.382.078s.26-.027.382-.078A.996.996 0 0 0 16 18c0-2.4.444-3.889 1.083-5.166.577-1.156 1.556-2.072 3.293-2.904a.983.983 0 0 0 .354-.225 1 1 0 0 0-.004-1.414l-3.997-4.02z" fill="#fff" class="color000 svgShape"></path>
+                                </svg></g></svg>
+                        </span>
+                        <span className="deleteChat"
+                            onClick={()=>handleDeleteChat(chat_id)}
+                        >
+                            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg"
+                                style={{paddingRight:"0px"}}>
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                        </span>
                     </span>
                 </div>
                 <div className="context-menu" style={{display: chatList[chat_id]?.show?"flex":"none"}}>
@@ -546,7 +573,7 @@ function Chat(){
                                             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                                         </svg>
                                     </span>
-                                    <span style={{display:contentEditable?"none":"flex"}} onClick={handleDeleteChat} >
+                                    <span style={{display:contentEditable?"none":"flex"}} onClick={()=>handleDeleteChat(defaultDoc?.uid)} >
                                         <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
                                             <polyline points="3 6 5 6 21 6"></polyline>
                                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -564,7 +591,7 @@ function Chat(){
                             </ol>
                             <div className="stickyLabel">
                                 <div className="labelHeading">
-                                    Pinned chats
+                                    Pinned Chats
                                 </div>
                             </div>
                             <div className="pinnedChats">
