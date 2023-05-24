@@ -238,7 +238,6 @@ function Chat(){
         });
     }
 
-    // pending: need to update the feature
     async function handleNewChatInitiate(){
         let data = {
             name: "new chat " + String(new Date()),
@@ -260,6 +259,7 @@ function Chat(){
         }).catch((error)=>{
             console.log(error)
         })
+        return data
     }
 
     // pending: add chatgpt script
@@ -267,9 +267,10 @@ function Chat(){
         return (new Array(2).fill(String(prompt)+" ").reduce((acc, t) => acc+t))
     }
 
-    async function handleSubmitPrompt(event, prompt=promptValue) {
+    async function handleSubmitPrompt(event, prompt=promptValue, defaultdoc=defaultDoc) {
         event.preventDefault()
-        let newDefaultDoc = defaultDoc;
+        console.log(defaultdoc)
+        let newDefaultDoc = defaultdoc;
         if(newDefaultDoc?.userPrompts) newDefaultDoc.userPrompts.push(prompt)
         else newDefaultDoc['userPrompts'] = [prompt]
         
@@ -281,7 +282,7 @@ function Chat(){
         if(newDefaultDoc?.userPrompts) newDefaultDoc.gptResponse.push(response)
         else newDefaultDoc['gptResponse'] = [response]
 
-        await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultDoc.uid), {
+        await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultdoc.uid), {
             userPrompts: newDefaultDoc.userPrompts,
             gptResponse: newDefaultDoc.gptResponse
         })
@@ -305,6 +306,7 @@ function Chat(){
             console.log("deleted!")
         })
         .catch((error)=>{console.log(error)})
+        setMessageCount(messageCount-1)
     }
 
     function handleOpenDialog() {
@@ -330,10 +332,17 @@ function Chat(){
         setIsOverlay(true);
     }
 
-    function handlePromptExample(event) {
+    async function handlePromptExample(event) {
         let prompt = event.target.textContent
         setPromptValue(prompt)
-        handleSubmitPrompt(event, prompt.split("\"")[1])
+        if(!defaultDoc) {
+            // handle when a new screen is shown
+            let data = await handleNewChatInitiate()
+            handleSubmitPrompt(event, prompt.split("\"")[1], data)
+        }
+        else {
+            handleSubmitPrompt(event, prompt.split("\"")[1])
+        }
     }
 
     function handleCloseSettings(){
@@ -449,7 +458,7 @@ function Chat(){
                             {chatList[chat_id]?.name}
                         </span>
                     </span>
-                    <span>
+                    <span style={{minWidth: "44px"}}>
                         <span 
                             onClick={(event)=>handleChatPin(event, chat_id)} 
                             style={{background: "transparent"}}>
