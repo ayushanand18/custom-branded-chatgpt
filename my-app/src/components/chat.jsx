@@ -40,6 +40,8 @@ function Chat(){
     const [isOverlayTwo, setIsOverlayTwo] = useState(false)
     const [messageCount, setMessageCount] = useState(0)
     const [newFolderName, setNewFolderName] = useState("")
+    const [isMessageVisible, setIsMessageVisible] = useState(false)
+    const [isCreatedVisible, setIsCreatedVisible] = useState(false)
     const bottomRef = useRef()
     const currentDoc = useRef()
     const [authState, setAuthState] = useState({
@@ -197,18 +199,37 @@ function Chat(){
         console.log(folders)
         setNewFolderName("")
         setFoldersEdit(foldersEdit^true)
+        setIsCreatedVisible(true)
+        
+        setTimeout(()=>{
+            setIsCreatedVisible(false)
+        }, 2500)
+    }
+
+    function handleDeleteFolder(folder_id) {
+        delete folders[folder_id]
+        let newFolders = folders;
+        setFolders(newFolders)
+        setFoldersEdit((state) => !state)
     }
 
     function handleAddToFolder(chat_id, event) {
+        console.log(event.target.value)
+        console.log(chat_id)
         Object.keys(folders)?.forEach((folder_uid)=>{
             if(folders[folder_uid]?.chats?.includes(chat_id))
                 folders[folder_uid] = (folders[folder_uid].chats?.indexOf(chat_id), 1)
         })
+        console.log("everything is fine")
         if(!folders[event.target.value].chats) folders[event.target.value].chats = []
 
         folders[event.target.value]?.chats?.push(chat_id)
         setFolders(folders)
         setFoldersEdit(foldersEdit^true)
+        setIsMessageVisible(true)
+        setTimeout(()=>{
+            setIsMessageVisible(false)
+        }, 2500)
     }
 
     function handleLogout (){
@@ -272,7 +293,7 @@ function Chat(){
 
     // pending: enable delete chat feature
     function handleDeleteChat(){
-
+        
     }
 
     function handleOpenDialog() {
@@ -364,11 +385,19 @@ function Chat(){
         return (
         <details>
             <summary>
-                <li key={folder_id+"li"} className="listItem">
+                <li key={folder_id+"li"} style={{display: "flex",justifyContent: "space-between",alignItems: "center"}} className="listItem">
                     <svg key={folder_id} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128" width="36" height="36">
                         <path stroke="#fff" strokeLinecap="round" strokeWidth="6" d="M26 45.5C26 35.835 33.835 28 43.5 28V28L55.3399 28C58.7317 28 61.7549 30.1389 62.8838 33.3374L65.1727 39.8226C66.2737 42.9422 69.1813 45.0623 72.4881 45.1568L84.5 45.5V45.5C94.0831 45.2262 102 52.9202 102 62.5071L102 74.5V80C102 90.4934 93.4934 99 83 99V99L64 99L45 99V99C34.5066 99 26 90.4934 26 80L26 66L26 45.5Z" ></path>
                     </svg>
                     {folders[folder_id]?.name}
+                    <span onClick={()=>handleDeleteFolder(folder_id)}>
+                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                    </span>
                 </li>
             </summary>
             <p key={folder_id+"p"} className="openFolderChats" style={{marginTop:"0px", marginBottom:'0px'}}>
@@ -389,7 +418,7 @@ function Chat(){
 
     const allChats = Object.keys(chatList)?.map((chat_id, index) => {
         return (
-            <li key={index+"li"} className="listItem" onClick={() => {
+            <li key={index+"li"} className={(chat_id===defaultDoc?.uid)?'listItem hovered':'listItem'} onClick={() => {
                     setDefaultDoc(chatList[chat_id]) 
                     setMessageCount(messageCount+1)
                 }}
@@ -419,7 +448,21 @@ function Chat(){
                     </span>
                 </div>
                 <div className="context-menu" style={{display: chatList[chat_id]?.show?"flex":"none"}}>
-                    <span className="stickyHead">Add to folder</span>
+                    <span className="stickyHead">
+                        Add to folder
+                        {isMessageVisible && <span className="folderSuccess rounded-md" >
+                            <svg height="10" viewBox="0 -10 40 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="0" y1="5" x2="15" y2="15" style={{stroke:"#fff",strokeWidth:"4"}} />
+                                <line x1="13" y1="15" x2="45" y2="-20" style={{stroke:"#fff",strokeWidth:"4"}} />
+                            </svg> added!
+                        </span>}
+                        {isCreatedVisible && <span className="folderSuccess rounded-md" >
+                            <svg height="10" viewBox="0 -10 40 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="0" y1="5" x2="15" y2="15" style={{stroke:"#fff",strokeWidth:"4"}} />
+                                <line x1="13" y1="15" x2="45" y2="-20" style={{stroke:"#fff",strokeWidth:"4"}} />
+                            </svg> created!
+                        </span>}
+                    </span>
                     <select className="addFolder" onChange={(event)=>handleAddToFolder(chat_id, event)}>
                         <option hidden disabled selected value>--folder--</option>
                         {Object.keys(folders)?.map((folder_id, index)=>{
@@ -503,7 +546,7 @@ function Chat(){
                                             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                                         </svg>
                                     </span>
-                                    <span style={{backgroundColor:"transparent"}} onClick={handleDeleteChat} >
+                                    <span style={{display:contentEditable?"none":"flex"}} onClick={handleDeleteChat} >
                                         <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
                                             <polyline points="3 6 5 6 21 6"></polyline>
                                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -511,8 +554,11 @@ function Chat(){
                                             <line x1="14" y1="11" x2="14" y2="17"></line>
                                         </svg>
                                     </span>
-                                    <span style={{display:contentEditable?"flex":"none", backgroundColor:"#43e500"}} className="rounded-md" onClick={(event)=>handleChatRename(event)}>
-                                        DONE
+                                    <span style={{display:contentEditable?"flex":"none"}} onClick={(event)=>handleChatRename(event)}>
+                                        <svg height="12" viewBox="0 -10 40 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <line x1="0" y1="5" x2="15" y2="15" style={{stroke:"#fff",strokeWidth:"4"}} />
+                                            <line x1="13" y1="15" x2="45" y2="-20" style={{stroke:"#fff",strokeWidth:"4"}} />
+                                        </svg>
                                     </span>
                                 </li>
                             </ol>
@@ -537,24 +583,24 @@ function Chat(){
                                 </ol>
                             </div>
                             <div className="stickyLabel">
-                            <div className="labelHeading">
-                                All chats
-                                <span>
-                                    Sort by:
-                                    <select className="select" onChange={handleChatSort}>
-                                        <option value="asc-date">Asc: Date</option>
-                                        <option value="desc-date">Desc: Date</option>
-                                        <option value="asc-name">Asc: Name</option>
-                                        <option value="desc-date">Desc: Date</option>
-                                    </select>
-                                </span>
+                                <div className="labelHeading">
+                                    All chats
+                                    <span>
+                                        Sort by:
+                                        <select className="select" onChange={handleChatSort}>
+                                            <option value="asc-date">Asc: Date</option>
+                                            <option value="desc-date">Desc: Date</option>
+                                            <option value="asc-name">Asc: Name</option>
+                                            <option value="desc-date">Desc: Date</option>
+                                        </select>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                        <div className="folders">
-                            <ol>
-                                {allChats}
-                            </ol>
-                        </div>
+                            <div className="folders">
+                                <ol>
+                                    {allChats}
+                                </ol>
+                            </div>
                         </div>
                     </div>
                     <div className="absolute" style={{display: quickContextVisibility?"inline":"none", bottom:"0rem", marginBottom:"7.2rem"}}>

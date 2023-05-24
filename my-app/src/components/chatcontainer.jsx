@@ -3,7 +3,8 @@ import Logo from '../assets/logo.svg';
 import '../styles/chat.css';
 
 function ChatContainer({defaultDoc,handleSubmitPrompt,promptValue,handleTextChange,bottomRef,handlePromptExample}){
-    document.title = defaultDoc?.name;
+    document.title = defaultDoc? defaultDoc.name:"New Chat";
+
     const defaultContainer = (
         <div className="defaultContainer">
             <h1>

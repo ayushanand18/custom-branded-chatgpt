@@ -563,7 +563,8 @@ ol div{
     flex-direction: column;
     align-items: flex-start;
 }
-.listItem:hover {
+.listItem:hover, 
+.hovered {
     background-color: rgba(42,43,50,1);
 }
 .listItem .span {
@@ -1718,4 +1719,8 @@ summary{ list-style: none }
 }
 .defaultContainer button:hover {
     background-color: rgba(217,217,227,1);
+}
+.folderSuccess{
+    background-color: #19c37d;
+    color: white;
 }
