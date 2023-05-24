@@ -269,7 +269,9 @@ function Chat(){
 
     async function handleSubmitPrompt(event, prompt=promptValue, defaultdoc=defaultDoc) {
         event.preventDefault()
-        console.log(defaultdoc)
+        if(!defaultdoc) {
+            defaultdoc = await handleNewChatInitiate()
+        }
         let newDefaultDoc = defaultdoc;
         if(newDefaultDoc?.userPrompts) newDefaultDoc.userPrompts.push(prompt)
         else newDefaultDoc['userPrompts'] = [prompt]
