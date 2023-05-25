@@ -41,7 +41,7 @@ function Chat(){
     const [messageCount, setMessageCount] = useState(0)
     const [newFolderName, setNewFolderName] = useState("")
     const [isMessageVisible, setIsMessageVisible] = useState(false)
-    const [isCreatedVisible, setIsCreatedVisible] = useState(false)
+    const [newFolderCreating, setNewFolderCreating] = useState(false)
     const bottomRef = useRef()
     const currentDoc = useRef()
     const [authState, setAuthState] = useState({
@@ -80,7 +80,6 @@ function Chat(){
 
         switch(category.target.value){
             case "asc-date":
-                console.log(newChatList)
                 newChatList = Object.fromEntries(
                     Object.entries(newChatList).sort(
                         ([,a],[,b])=>(a.time.seconds<b.time.seconds)?1:(a.time.seconds>b.time.seconds)?-1:0
@@ -110,7 +109,6 @@ function Chat(){
                 break
             default: break
         }
-        console.log(newChatList)
         setChatList(newChatList)
     }
 
@@ -127,7 +125,6 @@ function Chat(){
             chatDocs[doc.id].show = false
             // folders[doc.data().folderId]?.chats.push(doc.id)
         })
-        console.log(chatDocs)
 
         setChatList(chatDocs)
         setDefaultDoc(chatDocs[userData.data().pinnedChats[0]])
@@ -165,7 +162,6 @@ function Chat(){
     async function handleChatRename(event, chat_id) {
         let newDoc = defaultDoc
         newDoc['name'] = currentDoc.current.textContent
-        console.log(currentDoc.current.textContent)
         setDefaultDoc(newDoc)
 
         let newChatList = chatList
@@ -196,14 +192,9 @@ function Chat(){
                 name: newFolderName,
             }
         setFolders(newFolders)
-        console.log(folders)
         setNewFolderName("")
         setFoldersEdit(foldersEdit^true)
-        setIsCreatedVisible(true)
-        
-        setTimeout(()=>{
-            setIsCreatedVisible(false)
-        }, 2500)
+        setNewFolderCreating(false)
     }
 
     function handleDeleteFolder(folder_id) {
@@ -214,13 +205,10 @@ function Chat(){
     }
 
     function handleAddToFolder(chat_id, event) {
-        console.log(event.target.value)
-        console.log(chat_id)
         Object.keys(folders)?.forEach((folder_uid)=>{
-            if(folders[folder_uid]?.chats?.includes(chat_id))
-                folders[folder_uid] = (folders[folder_uid].chats?.indexOf(chat_id), 1)
+            if(folders[folder_uid] && folders[folder_uid].chats && folders[folder_uid].chats.includes(chat_id))
+                folders[folder_uid].chats = folders[folder_uid].chats.splice(folders[folder_uid].chats.indexOf(chat_id), 1)
         })
-        console.log("everything is fine")
         if(!folders[event.target.value].chats) folders[event.target.value].chats = []
 
         folders[event.target.value]?.chats?.push(chat_id)
@@ -494,12 +482,6 @@ function Chat(){
                                 <line x1="13" y1="15" x2="45" y2="-20" style={{stroke:"#fff",strokeWidth:"4"}} />
                             </svg> added!
                         </span>}
-                        {isCreatedVisible && <span className="folderSuccess rounded-md" >
-                            <svg height="10" viewBox="0 -10 40 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <line x1="0" y1="5" x2="15" y2="15" style={{stroke:"#fff",strokeWidth:"4"}} />
-                                <line x1="13" y1="15" x2="45" y2="-20" style={{stroke:"#fff",strokeWidth:"4"}} />
-                            </svg> created!
-                        </span>}
                     </span>
                     <select className="addFolder" onChange={(event)=>handleAddToFolder(chat_id, event)}>
                         <option hidden disabled selected value>--folder--</option>
@@ -513,12 +495,6 @@ function Chat(){
                             )
                         })}
                     </select>
-                    <span className="addFolder">
-                        <input type="text" placeholder="enter folder name" value={newFolderName} onChange={(event) => {setNewFolderName(event.target.value)}}/>
-                        <button className="rounded-md" onClick={handleCreateFolder} style={{backgroundColor: "greenyellow", fontSize:".75rem", fontWeight: "600"}}>
-                            NEW
-                        </button>
-                    </span>
                 </div>
             </li>
         )
@@ -613,6 +589,19 @@ function Chat(){
                             <div className="stickyLabel">
                                 <div className="labelHeading">
                                     Folders
+                                    <span style={{display:newFolderCreating?"none":"inherit"}} 
+                                        className="rounded-md" onClick={()=>{
+                                        setNewFolderCreating(true);
+                                    }}>+ NEW</span>
+                                    <span style={{display:newFolderCreating?"flex":"none", position:"fixed", left:'72px', right:'0px', alignItems:'center'}} className="addFolder">
+                                        <input type="text" placeholder="enter folder name" value={newFolderName} onChange={(event) => {setNewFolderName(event.target.value)}}/>
+                                        <span onClick={handleCreateFolder}>
+                                            <svg height="12" viewBox="0 -10 40 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <line x1="0" y1="5" x2="15" y2="15" style={{stroke:"#fff",strokeWidth:"4"}} />
+                                                <line x1="13" y1="15" x2="45" y2="-20" style={{stroke:"#fff",strokeWidth:"4"}} />
+                                            </svg>
+                                        </span>
+                                    </span>
                                 </div>
                             </div>
                             <div className="folders">
