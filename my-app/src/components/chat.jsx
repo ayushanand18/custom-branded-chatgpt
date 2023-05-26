@@ -6,6 +6,20 @@ import { useNavigate } from "react-router-dom";
 import ChatContainer from './chatcontainer';
 import '../styles/chat.css';
 
+class DocData {
+    constructor(name, userPrompts, gptResponse, folderId, time, uid) {
+        this.name = name
+        this.userPrompts = userPrompts
+        this.gptResponse = gptResponse
+        this.folderId = folderId
+        this.time = time
+        this.uid = uid
+        this.showFolderDialog = false
+        this.showContentEdit = false
+        this.showThreeDotMenu = false
+    }
+}
+
 function Chat(){
     const firebaseConfig = {
         apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -34,7 +48,7 @@ function Chat(){
     const [isOverlay, setIsOverlay] = useState(false);
     const [userName, setUserName] = useState("");
     const [chatList, setChatList] = useState({})
-    const [defaultDoc, setDefaultDoc] = useState([])
+    const [defaultDoc, setDefaultDoc] = useState(null)
     const [contentEditable, setContentEditable] = useState(false)
     const [promptValue, setPromptValue] = useState("")
     const [isOverlayTwo, setIsOverlayTwo] = useState(false)
@@ -75,6 +89,37 @@ function Chat(){
         localStorage.setItem('folders', JSON.stringify(folders));
     }, [folders, foldersEdit]);
 
+    async function handleDataFetch(user) {
+        if(!user) return;
+        const chatsRef = collection(db, `users/${user?.uid}/chats`);
+        const userData = await getDoc(doc(db, `users`,`${user?.uid}`))
+        const querySnapshot = await getDocs(chatsRef);
+
+        let chatDocs = {}
+        querySnapshot.forEach((doc) => {
+            chatDocs[doc.id] = Object.setPrototypeOf(
+                {...doc.data(), ...{"uid":doc.id}}, DocData.prototype
+                )
+        })
+
+        setChatList(chatDocs)
+        setDefaultDoc(chatDocs[userData.data().pinnedChats[0]])
+        // setFolderNames(userData.data().folderNames)
+        // setFolderIds(userData.data().folderIds)
+        setPinnedChats(userData.data().pinnedChats)
+        setMessageCount(messageCount+1)
+    }
+
+    async function handleChatPin(event, chat_id) {
+        if(pinnedChats?.includes(chat_id)) return;
+        let newPinnedChats = pinnedChats
+        newPinnedChats.push(chat_id)
+        setPinnedChats(newPinnedChats)
+        await updateDoc(doc(db, `users/`,`${authState.user?.uid}`), {
+            pinnedChats: newPinnedChats
+        })
+    }
+
     function handleChatSort(category) {
         let newChatList = chatList
 
@@ -112,38 +157,6 @@ function Chat(){
         setChatList(newChatList)
     }
 
-    async function handleDataFetch(user) {
-        if(!user) return;
-        const chatsRef = collection(db, `users/${user?.uid}/chats`);
-        const userData = await getDoc(doc(db, `users`,`${user?.uid}`))
-        const querySnapshot = await getDocs(chatsRef);
-
-        let chatDocs = {}
-        querySnapshot.forEach((doc) => {
-            chatDocs[doc.id] = doc.data()
-            chatDocs[doc.id].uid = doc.id
-            chatDocs[doc.id].show = false
-            // folders[doc.data().folderId]?.chats.push(doc.id)
-        })
-
-        setChatList(chatDocs)
-        setDefaultDoc(chatDocs[userData.data().pinnedChats[0]])
-        // setFolderNames(userData.data().folderNames)
-        // setFolderIds(userData.data().folderIds)
-        setPinnedChats(userData.data().pinnedChats)
-        setMessageCount(messageCount+1)
-    }
-
-    async function handleChatPin(event, chat_id) {
-        if(pinnedChats?.includes(chat_id)) return;
-        let newPinnedChats = pinnedChats
-        newPinnedChats.push(chat_id)
-        setPinnedChats(newPinnedChats)
-        await updateDoc(doc(db, `users/`,`${authState.user?.uid}`), {
-            pinnedChats: newPinnedChats
-        })
-    }
-
     async function handleChatUnpin(event, chat_id) {
         if(!pinnedChats?.includes(chat_id)) return;
         let newPinnedChats = pinnedChats
@@ -154,25 +167,25 @@ function Chat(){
         })
     }
 
-    function handleChatPencil(event){
-        currentDoc.current.setAttribute("contenteditable", "true")
-        setContentEditable(true)
+    function handleChatPencil(chat_id){
+        chatList[chat_id].showContentEdit = true;
+        setChatList(chatList)
     }
 
-    async function handleChatRename(event, chat_id) {
-        let newDoc = defaultDoc
-        newDoc['name'] = currentDoc.current.textContent
-        setDefaultDoc(newDoc)
+    function handleChatNameUpdate(event, chat_id) {
+        console.log(event.target.value)
+        chatList[chat_id].name = event.target.textContent
+        setChatList(chatList)
+    }
 
-        let newChatList = chatList
-        newChatList[newDoc?.uid] = newDoc
-        setChatList(newChatList)
-        await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, newDoc?.uid), {
-            name: newDoc?.name
+    async function handleChatRename(chat_id) {
+        console.log(chatList[chat_id].name)
+        await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, chatList[chat_id]?.uid), {
+            name: chatList[chat_id].name
         })
 
-        setContentEditable(false)
-        currentDoc.current.removeAttribute("contenteditable")
+        chatList[chat_id].showContentEdit = false;
+        setChatList(chatList)
     }
 
     // for hashing a string to generate folderId
@@ -205,6 +218,10 @@ function Chat(){
     }
 
     function handleAddToFolder(chat_id, event) {
+        // do nothing if the chat is already present
+        if(folders[event.target.value] && folders[event.target.value].chats.includes(chat_id)) 
+            return
+        
         Object.keys(folders)?.forEach((folder_uid)=>{
             if(folders[folder_uid] && folders[folder_uid].chats && folders[folder_uid].chats.includes(chat_id))
                 folders[folder_uid].chats = folders[folder_uid].chats.splice(folders[folder_uid].chats.indexOf(chat_id), 1)
@@ -228,18 +245,20 @@ function Chat(){
 
     async function handleNewChatInitiate(){
         let data = {
-            name: "new chat " + String(new Date()),
+            name: "new chat" + new Date(),
             userPrompts: [],
             gptResponse: [],
             folderId: "",
             time: new Date(),
         }
+        let obj;
 
         await addDoc(collection(db, `users/${authState.user?.uid}/chats`), data)
         .then((doc)=>{
-            data['uid'] = doc.id
-            data['show'] = false
-            setDefaultDoc(data)
+            obj = Object.setPrototypeOf(
+                {...data, ...{"uid":doc.id}}, DocData.prototype
+                )
+            setDefaultDoc(obj)
             let newChatList = chatList
             newChatList[doc.id] = data
             setChatList(newChatList)
@@ -247,7 +266,7 @@ function Chat(){
         }).catch((error)=>{
             console.log(error)
         })
-        return data
+        return obj
     }
 
     // pending: add chatgpt script
@@ -261,8 +280,9 @@ function Chat(){
             defaultdoc = await handleNewChatInitiate()
         }
         let newDefaultDoc = defaultdoc;
+        console.log(newDefaultDoc)
         if(newDefaultDoc?.userPrompts) newDefaultDoc.userPrompts.push(prompt)
-        else newDefaultDoc['userPrompts'] = [prompt]
+        else newDefaultDoc.userPrompts = [prompt]
         
         setPromptValue("")
         setDefaultDoc(newDefaultDoc)
@@ -270,7 +290,7 @@ function Chat(){
 
         let response = evalChatgpt(newDefaultDoc.userPrompts.slice(-1))
         if(newDefaultDoc?.userPrompts) newDefaultDoc.gptResponse.push(response)
-        else newDefaultDoc['gptResponse'] = [response]
+        else newDefaultDoc.gptResponse = [response]
 
         await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultdoc.uid), {
             userPrompts: newDefaultDoc.userPrompts,
@@ -438,13 +458,41 @@ function Chat(){
                 }}
             >
                 <div style={{width: "100%", flexDirection:"row", background:"inherit"}}>
+                    {/* $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                     */}
+                    <span className="pencil-icon" style={{display:chatList[chat_id]?.showContentEdit?"none":"flex"}} onClick={()=>handleChatPencil(chat_id)}>
+                        <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                    </span>
+                    <span className="delete-icon" style={{display:chatList[chat_id]?.showContentEdit?"none":"flex"}} onClick={()=>handleDeleteChat(chat_id)} >
+                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                    </span>
+                    <span 
+                        style={{display:chatList[chat_id]?.showContentEdit?"flex":"none"}} 
+                        onClick={()=>handleChatRename(chat_id)}>
+                        <svg height="12" viewBox="0 -10 40 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="0" y1="5" x2="15" y2="15" style={{stroke:"#fff",strokeWidth:"4"}} />
+                            <line x1="13" y1="15" x2="45" y2="-20" style={{stroke:"#fff",strokeWidth:"4"}} />
+                        </svg>
+                    </span>
                     <span style={{display:"flex", gap:".4rem", alignItems: "center"}}>
                         <img key={index}
                             src="https://www.iconpacks.net/icons/4/free-icon-open-folder-11477.png" alt='three-dots' 
                             height='22' style={{filter: "invert(100%)", height: "16px", padding: "0px 5px 0px 0px"}}
-                            onClick={()=>{chatList[chat_id]['show'] ^= true;}}
+                            onClick={()=>{chatList[chat_id].showFolderDialog ^= true;}}
                             />
-                        <span key={index} className="span" >
+                        <span key={index}
+                            onChange={(event)=> handleChatNameUpdate(event, chat_id)} 
+                            onKeyDown={(event)=> handleChatNameUpdate(event, chat_id)}
+                            className="span" style={{WebkitUserModify: chatList[chat_id]?.showContentEdit?"read-write":"read-only"}}>
                             {chatList[chat_id]?.name}
                         </span>
                     </span>
@@ -473,7 +521,7 @@ function Chat(){
                         </span>
                     </span>
                 </div>
-                <div className="context-menu" style={{display: chatList[chat_id]?.show?"flex":"none"}}>
+                <div className="context-menu" style={{display: chatList[chat_id]?.showFolderDialog?"flex":"none"}}>
                     <span className="stickyHead">
                         Add to folder
                         {isMessageVisible && <span className="folderSuccess rounded-md" >
@@ -542,42 +590,6 @@ function Chat(){
                             </div>
                             <div className="stickyLabel">
                                 <div className="labelHeading">
-                                    Opened Chat
-                                </div>
-                            </div>
-                            <ol>
-                                <li className="listItem"> 
-                                    <svg
-                                        stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                    </svg>
-                                    <span className="span" ref={currentDoc}>
-                                        {defaultDoc?.name}
-                                    </span>
-                                    <span style={{display:contentEditable?"none":"flex"}} onClick={(event)=>handleChatPencil(event)}>
-                                        <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M12 20h9"></path>
-                                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                                        </svg>
-                                    </span>
-                                    <span style={{display:contentEditable?"none":"flex"}} onClick={()=>handleDeleteChat(defaultDoc?.uid)} >
-                                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
-                                            <polyline points="3 6 5 6 21 6"></polyline>
-                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                            <line x1="10" y1="11" x2="10" y2="17"></line>
-                                            <line x1="14" y1="11" x2="14" y2="17"></line>
-                                        </svg>
-                                    </span>
-                                    <span style={{display:contentEditable?"flex":"none"}} onClick={(event)=>handleChatRename(event)}>
-                                        <svg height="12" viewBox="0 -10 40 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <line x1="0" y1="5" x2="15" y2="15" style={{stroke:"#fff",strokeWidth:"4"}} />
-                                            <line x1="13" y1="15" x2="45" y2="-20" style={{stroke:"#fff",strokeWidth:"4"}} />
-                                        </svg>
-                                    </span>
-                                </li>
-                            </ol>
-                            <div className="stickyLabel">
-                                <div className="labelHeading">
                                     Pinned Chats
                                 </div>
                             </div>
@@ -593,7 +605,7 @@ function Chat(){
                                         className="rounded-md" onClick={()=>{
                                         setNewFolderCreating(true);
                                     }}>+ NEW</span>
-                                    <span style={{display:newFolderCreating?"flex":"none", position:"fixed", left:'72px', right:'0px', alignItems:'center'}} className="addFolder">
+                                    <span style={{display:newFolderCreating?"flex":"none", position: "absolute", left:'72px', right:'0px', alignItems:'center'}} className="addFolder">
                                         <input type="text" placeholder="enter folder name" value={newFolderName} onChange={(event) => {setNewFolderName(event.target.value)}}/>
                                         <span onClick={handleCreateFolder}>
                                             <svg height="12" viewBox="0 -10 40 26" fill="none" xmlns="http://www.w3.org/2000/svg">
