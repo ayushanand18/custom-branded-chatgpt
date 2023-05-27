@@ -57,7 +57,6 @@ function Chat(){
     const [isMessageVisible, setIsMessageVisible] = useState(false)
     const [newFolderCreating, setNewFolderCreating] = useState(false)
     const bottomRef = useRef()
-    const currentDoc = useRef()
     const [authState, setAuthState] = useState({
         isSignedIn: false,
         pending: true,
@@ -450,17 +449,20 @@ function Chat(){
 
     const allChats = Object.keys(chatList)?.map((chat_id, index) => {
         return (
-            <li key={index+"li"} className={(chat_id===defaultDoc?.uid)?'listItem hovered':'listItem'} 
-                style={{flexDirection:"column"}}
-                onClick={() => {
-                    setDefaultDoc(chatList[chat_id]) 
-                    setMessageCount(messageCount+1)
-                }}
-            >
-                <div style={{width: "100%", flexDirection:"row", background:"inherit"}}>
-                    {/* $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                     */}                    
+            <li key={index+"li"} className='listItem'
+                style={{flexDirection:"column"}}>
+                {/* 
+                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                    $$$$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                */}
+                <div
+                    className={(chat_id===defaultDoc?.uid)?'divLi hovered':'divLi'} 
+                    style={{width: "100%", flexDirection:"row", background:"inherit"}}
+                    onClick={() => {
+                        setDefaultDoc(chatList[chat_id]) 
+                        setMessageCount(messageCount+1)
+                    }} >
                     <span dataRole="tick-rename-done"
                         style={{display:chatList[chat_id]?.showContentEdit?"flex":"none"}} 
                         onClick={()=>handleChatRename(chat_id)}>
@@ -478,7 +480,7 @@ function Chat(){
                         <span key={index}
                             onChange={(event)=> handleChatNameUpdate(event, chat_id)} 
                             onKeyDown={(event)=> handleChatNameUpdate(event, chat_id)}
-                            className="span" style={{WebkitUserModify: (chat_id===openedDocId)?"read-write":"read-only"}}>
+                            className="span" style={{WebkitUserModify: (chatList[chat_id]?.showContentEdit)?"read-write":"read-only"}}>
                             {chatList[chat_id]?.name}
                         </span>
                     </span>
@@ -498,22 +500,24 @@ function Chat(){
                     onClick={()=>{setOpenedDocId(false)}}
                     style={{display: (chat_id===openedDocId)?"flex":"none"}}>
                     <ul>
-                        <li className="shortHandMenu-Item">
-                            <span  
+                        <li 
+                            className="shortHandMenu-Item"
+                            onClick={()=>handleChatPencil(chat_id)}>
+                            <span
                                 className="pencil-icon"
-                                style={{display: (chat_id===openedDocId)?"none":"flex"}} 
-                                onClick={()=>handleChatPencil(chat_id)}>
+                                style={{display: (chat_id===openedDocId)?"flex":"none"}} 
+                                >
                                 <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M12 20h9"></path>
                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                                 </svg>
                             </span> Rename
                         </li>
-                        <li className="shortHandMenu-Item">
+                        <li className="shortHandMenu-Item" onClick={()=>handleDeleteChat(chat_id)}>
                             <span 
                                 className="delete-icon" 
-                                style={{display: (chat_id===openedDocId)?"none":"flex"}} 
-                                onClick={()=>handleDeleteChat(chat_id)} >
+                                style={{display: (chat_id===openedDocId)?"flex":"none"}} 
+                                >
                                 <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
                                     <polyline points="3 6 5 6 21 6"></polyline>
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -522,9 +526,9 @@ function Chat(){
                                 </svg>
                             </span> Delete
                         </li>
-                        <li className="shortHandMenu-Item">
+                        <li className="shortHandMenu-Item"
+                            onClick={(event)=>handleChatPin(event, chat_id)} >
                             <span 
-                                onClick={(event)=>handleChatPin(event, chat_id)} 
                                 style={{background: "transparent"}}>
                                     <svg id="SvgjsSvg1001" width="24" height="24" xmlns="http://www.w3.org/2000/svg" version="1.1" 
                                         style={{transform:"rotate(-45deg)", color: "#fff", overflow:"visible"}}>

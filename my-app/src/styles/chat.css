@@ -530,7 +530,8 @@ ol{
     margin: 0;
     padding: 0;
 }
-ol div{
+ol .divLi, 
+ol .context-menu{
     -webkit-text-size-adjust: 100%;
     font-feature-settings: normal;
     font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
@@ -563,9 +564,9 @@ ol div{
     flex-direction: column;
     align-items: flex-start;
 }
-.listItem:hover, 
+.divLi:hover, 
 .hovered {
-    background-color: rgba(42,43,50,1);
+    background-color: rgba(42,43,50,1) !important;
 }
 .listItem .span {
     -webkit-text-size-adjust: 100%;
@@ -1725,6 +1726,7 @@ summary{ list-style: none }
     color: white;
 }
 .shortHandMenu {
+    padding: 1em;
     position: absolute;
     background-color: #2d333a;
     color: white;
@@ -1737,7 +1739,7 @@ summary{ list-style: none }
     min-width: 140px;
 }
 .shortHandMenu ul{
-    padding-left: 10px;
+    padding: 0px;
     list-style: none;
     width: 100%;
     position: relative;
