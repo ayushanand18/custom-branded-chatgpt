@@ -498,7 +498,7 @@ function Chat(){
                 </div>
                 <div className="shortHandMenu"
                     onClick={()=>{setOpenedDocId(false)}}
-                    style={{display: (chat_id===openedDocId)?"flex":"none"}}>
+                    style={{display: (chat_id===openedDocId)?"contents":"none"}}>
                     <ul>
                         <li 
                             className="shortHandMenu-Item"

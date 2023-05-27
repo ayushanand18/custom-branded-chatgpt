@@ -1728,7 +1728,7 @@ summary{ list-style: none }
 .shortHandMenu {
     padding: 1em;
     position: absolute;
-    background-color: #2d333a;
+    background-color: rgba(5,5,9,1);
     color: white;
     display: flex;
     flex-direction: column;
@@ -1737,11 +1737,13 @@ summary{ list-style: none }
     top: 40px;
     right: 0;
     min-width: 140px;
+    transform: translate(0px,0px) rotate(0) skewX(0) skewY(0) scaleX(1) scaleY(1);
 }
 .shortHandMenu ul{
-    padding: 0px;
+    background-color: rgba(5,5,9,1);
+    padding: 10px;
     list-style: none;
-    width: 100%;
+    width: 70%;
     position: relative;
 }
 .shortHandMenu-Item {
@@ -1752,4 +1754,7 @@ summary{ list-style: none }
     border-bottom: 1px solid #989fdd;
     display: flex;
     z-index: 7;
+}
+.shortHandMenu-Item:hover {
+    background-color: #6e6e80;
 }
