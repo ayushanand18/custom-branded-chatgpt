@@ -2,7 +2,6 @@
 API for backend to Custom Branded ChatGPT
 """
 import os
-import asyncio
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 import firebase_admin
@@ -11,7 +10,13 @@ from firebase_admin import credentials
 
 app = Flask(__name__)
 load_dotenv()
+
+#--------------------
+# Environment
+#--------------------
 PASS_KEY = os.getenv('FLASK_APP_FIREBASE_HASHED_KEY')
+GPT_API_KEY = os.getenv('FLASK_APP_OPEN_AI_KEY')
+
 #--------------------
 # Firebase Setup
 #--------------------
@@ -27,6 +32,7 @@ db_app = firebase_admin.initialize_app(cred)
 
 @app.route("/get_gpt_response")
 def get_gpt_response():
+    "GPT4 response generation"
     return ""
 
 @app.route("/setup_new_account")
@@ -46,7 +52,7 @@ def setup_new_account():
     try:
         if pass_key!=PASS_KEY:
             raise IncorrectKey
-    
+
         link = Auth.generate_password_reset_link(email, action_code_settings=None, app=db_app)
         return jsonify({
             "result": link,

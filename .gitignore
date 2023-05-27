@@ -132,3 +132,4 @@ dist
 # python files for backend
 .venv/
 py_cache/
+serviceAccountKey.json
