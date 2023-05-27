@@ -56,6 +56,7 @@ function Chat(){
     const [newFolderName, setNewFolderName] = useState("")
     const [isMessageVisible, setIsMessageVisible] = useState(false)
     const [newFolderCreating, setNewFolderCreating] = useState(false)
+    const [folderNameN, setFolderNameN] = useState("")
     const bottomRef = useRef()
     const [authState, setAuthState] = useState({
         isSignedIn: false,
@@ -216,18 +217,18 @@ function Chat(){
         setFoldersEdit((state) => !state)
     }
 
-    function handleAddToFolder(chat_id, event) {
+    function handleAddToFolder(chat_id) {
         // do nothing if the chat is already present
-        if(folders[event.target.value] && folders[event.target.value].chats.includes(chat_id)) 
+        if(folders[folderNameN] && folders[folderNameN].chats.includes(chat_id)) 
             return
         
         Object.keys(folders)?.forEach((folder_uid)=>{
             if(folders[folder_uid] && folders[folder_uid].chats && folders[folder_uid].chats.includes(chat_id))
                 folders[folder_uid].chats = folders[folder_uid].chats.splice(folders[folder_uid].chats.indexOf(chat_id), 1)
         })
-        if(!folders[event.target.value].chats) folders[event.target.value].chats = []
+        if(!folders[folderNameN].chats) folders[folderNameN].chats = []
 
-        folders[event.target.value]?.chats?.push(chat_id)
+        folders[folderNameN]?.chats?.push(chat_id)
         setFolders(folders)
         setFoldersEdit(foldersEdit^true)
         setIsMessageVisible(true)
@@ -553,7 +554,7 @@ function Chat(){
                             </svg> added!
                         </span>}
                     </span>
-                    <select className="addFolder" onChange={(event)=>handleAddToFolder(chat_id, event)}>
+                    <select className="addFolder" onChange={(event)=>setFolderNameN(event.target.value)}>
                         <option hidden disabled selected value>--folder--</option>
                         {Object.keys(folders)?.map((folder_id, index)=>{
                             return (
@@ -565,6 +566,7 @@ function Chat(){
                             )
                         })}
                     </select>
+                    <button className="rounded-md" onClick={(event) => handleAddToFolder(chat_id)}>MOVE</button>
                 </div>
             </li>
         )
