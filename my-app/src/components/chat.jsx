@@ -49,7 +49,7 @@ function Chat(){
     const [userName, setUserName] = useState("");
     const [chatList, setChatList] = useState({})
     const [defaultDoc, setDefaultDoc] = useState(null)
-    const [contentEditable, setContentEditable] = useState(false)
+    const [openedDocId, setOpenedDocId] = useState(null)
     const [promptValue, setPromptValue] = useState("")
     const [isOverlayTwo, setIsOverlayTwo] = useState(false)
     const [messageCount, setMessageCount] = useState(0)
@@ -460,22 +460,8 @@ function Chat(){
                 <div style={{width: "100%", flexDirection:"row", background:"inherit"}}>
                     {/* $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                     */}
-                    <span className="pencil-icon" style={{display:chatList[chat_id]?.showContentEdit?"none":"flex"}} onClick={()=>handleChatPencil(chat_id)}>
-                        <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 20h9"></path>
-                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                        </svg>
-                    </span>
-                    <span className="delete-icon" style={{display:chatList[chat_id]?.showContentEdit?"none":"flex"}} onClick={()=>handleDeleteChat(chat_id)} >
-                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            <line x1="10" y1="11" x2="10" y2="17"></line>
-                            <line x1="14" y1="11" x2="14" y2="17"></line>
-                        </svg>
-                    </span>
-                    <span 
+                     */}                    
+                    <span dataRole="tick-rename-done"
                         style={{display:chatList[chat_id]?.showContentEdit?"flex":"none"}} 
                         onClick={()=>handleChatRename(chat_id)}>
                         <svg height="12" viewBox="0 -10 40 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -492,34 +478,66 @@ function Chat(){
                         <span key={index}
                             onChange={(event)=> handleChatNameUpdate(event, chat_id)} 
                             onKeyDown={(event)=> handleChatNameUpdate(event, chat_id)}
-                            className="span" style={{WebkitUserModify: chatList[chat_id]?.showContentEdit?"read-write":"read-only"}}>
+                            className="span" style={{WebkitUserModify: (chat_id===openedDocId)?"read-write":"read-only"}}>
                             {chatList[chat_id]?.name}
                         </span>
                     </span>
-                    <span style={{minWidth: "44px"}}>
-                        <span 
-                            onClick={(event)=>handleChatPin(event, chat_id)} 
-                            style={{background: "transparent"}}>
-                                <svg id="SvgjsSvg1001" width="24" height="24" xmlns="http://www.w3.org/2000/svg" version="1.1" 
-                                    style={{transform:"rotate(-45deg)", color: "#fff", overflow:"visible"}}>
-                                        <defs id="SvgjsDefs1002"></defs>
-                                        <g id="SvgjsG1008">
-                                        <svg xmlns="http://www.w3.org/2000/svg" baseProfile="tiny" version="1.2" viewBox="0 0 24 24" width="16" height="16" >
-                                        <path d="M16.729 4.271a1 1 0 0 0-1.414-.004 1.004 1.004 0 0 0-.225.355c-.832 1.736-1.748 2.715-2.904 3.293C10.889 8.555 9.4 9 7 9a1.006 1.006 0 0 0-.923.617 1.001 1.001 0 0 0 .217 1.09l3.243 3.243L5 20l6.05-4.537 3.242 3.242a.975.975 0 0 0 .326.217c.122.051.252.078.382.078s.26-.027.382-.078A.996.996 0 0 0 16 18c0-2.4.444-3.889 1.083-5.166.577-1.156 1.556-2.072 3.293-2.904a.983.983 0 0 0 .354-.225 1 1 0 0 0-.004-1.414l-3.997-4.02z" fill="#fff" class="color000 svgShape"></path>
-                                </svg></g></svg>
-                        </span>
-                        <span className="deleteChat"
-                            onClick={()=>handleDeleteChat(chat_id)}
-                        >
-                            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg"
-                                style={{paddingRight:"0px"}}>
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                <line x1="10" y1="11" x2="10" y2="17"></line>
-                                <line x1="14" y1="11" x2="14" y2="17"></line>
-                            </svg>
-                        </span>
-                    </span>
+
+                    <span 
+                        style={{minWidth: "20px",  display: "flex", justifyContent:"center", padding: "0 .5em 0 .5em"}} 
+                        onClick={() => {setOpenedDocId((x) => x?null:chat_id)}}>
+                        <img 
+                            src="https://img.uxwing.com/wp-content/themes/uxwing/download/web-app-development/more-options-icon.svg" 
+                            height="20px" 
+                            alt="three-dots" 
+                            style={{filter: "invert(100%)"}}
+                            />
+                    </span>                    
+                </div>
+                <div className="shortHandMenu"
+                    onClick={()=>{setOpenedDocId(false)}}
+                    style={{display: (chat_id===openedDocId)?"flex":"none"}}>
+                    <ul>
+                        <li className="shortHandMenu-Item">
+                            <span  
+                                className="pencil-icon"
+                                style={{display: (chat_id===openedDocId)?"none":"flex"}} 
+                                onClick={()=>handleChatPencil(chat_id)}>
+                                <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 20h9"></path>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                </svg>
+                            </span> Rename
+                        </li>
+                        <li className="shortHandMenu-Item">
+                            <span 
+                                className="delete-icon" 
+                                style={{display: (chat_id===openedDocId)?"none":"flex"}} 
+                                onClick={()=>handleDeleteChat(chat_id)} >
+                                <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </span> Delete
+                        </li>
+                        <li className="shortHandMenu-Item">
+                            <span 
+                                onClick={(event)=>handleChatPin(event, chat_id)} 
+                                style={{background: "transparent"}}>
+                                    <svg id="SvgjsSvg1001" width="24" height="24" xmlns="http://www.w3.org/2000/svg" version="1.1" 
+                                        style={{transform:"rotate(-45deg)", color: "#fff", overflow:"visible"}}>
+                                            <defs id="SvgjsDefs1002"></defs>
+                                            <g id="SvgjsG1008">
+                                                <svg xmlns="http://www.w3.org/2000/svg" baseProfile="tiny" version="1.2" viewBox="0 0 24 24" width="16" height="16" >
+                                                    <path d="M16.729 4.271a1 1 0 0 0-1.414-.004 1.004 1.004 0 0 0-.225.355c-.832 1.736-1.748 2.715-2.904 3.293C10.889 8.555 9.4 9 7 9a1.006 1.006 0 0 0-.923.617 1.001 1.001 0 0 0 .217 1.09l3.243 3.243L5 20l6.05-4.537 3.242 3.242a.975.975 0 0 0 .326.217c.122.051.252.078.382.078s.26-.027.382-.078A.996.996 0 0 0 16 18c0-2.4.444-3.889 1.083-5.166.577-1.156 1.556-2.072 3.293-2.904a.983.983 0 0 0 .354-.225 1 1 0 0 0-.004-1.414l-3.997-4.02z" fill="#fff" class="color000 svgShape"></path>
+                                                </svg>
+                                            </g>
+                                    </svg> Pin
+                            </span>
+                        </li>
+                    </ul>
                 </div>
                 <div className="context-menu" style={{display: chatList[chat_id]?.showFolderDialog?"flex":"none"}}>
                     <span className="stickyHead">

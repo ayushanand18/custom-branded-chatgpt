@@ -1724,3 +1724,30 @@ summary{ list-style: none }
     background-color: #19c37d;
     color: white;
 }
+.shortHandMenu {
+    position: absolute;
+    background-color: #2d333a;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    transition: all .3s ease-in-out;
+    margin: auto;
+    top: 40px;
+    right: 0;
+    min-width: 140px;
+}
+.shortHandMenu ul{
+    padding-left: 10px;
+    list-style: none;
+    width: 100%;
+    position: relative;
+}
+.shortHandMenu-Item {
+    -webkit-text-size-adjust: 100%;
+    width: 100%;
+    padding: .75em .2em .75em .2em;
+    border: none;
+    border-bottom: 1px solid #989fdd;
+    display: flex;
+    z-index: 7;
+}
