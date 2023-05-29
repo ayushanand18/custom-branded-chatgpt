@@ -1,20 +1,37 @@
-"""
-API for backend to Custom Branded ChatGPT
-"""
+# main.py
+
 import os
+import asyncio
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify, Response
-from flask_cors import CORS
+from fastapi import FastAPI, status, Request
+from starlette.responses import StreamingResponse
+from sse_starlette.sse import EventSourceResponse
+from fastapi.middleware.cors import CORSMiddleware
 import firebase_admin
 from firebase_admin import auth as Auth
 from firebase_admin import credentials
 import openai
 import random
 import string
+from time import sleep
+import json
 
 load_dotenv()
-app = Flask(__name__)
-cors = CORS(app, resources={r"/*":{"origins":''}})
+app = FastAPI()
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+    "https://3000-ayushanand1-custombrand-sscwxw1m6v2.ws-us98.gitpod.io",
+    "https://custom-branded-chatgpt.vercel.app/",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 #--------------------
 # Environment
@@ -35,7 +52,7 @@ db_app = firebase_admin.initialize_app(cred)
 
 # as a security measure we will not define a home ('/') root
 # so as to make people believe that this endpoint is not functional
-@app.route("/test")
+@app.get("/test")
 def test():
     return "hello"
     origin = request.environ.get('HTTP_ORIGIN', '*')
@@ -43,8 +60,11 @@ def test():
     resp.headers['Access-Control-Allow-Origin'] = origin
     return resp
 
-@app.route("/get_gpt_response", methods=["GET"])
-def get_gpt_response(*args):
+STREAM_DELAY = 1  # second
+RETRY_TIMEOUT = 15000  # milisecond
+
+@app.get("/get_gpt_response")
+def get_gpt_response(context, user, request:Request):
     """
     GPT4 response generation
 
@@ -57,8 +77,8 @@ def get_gpt_response(*args):
     ::Usage
         /get_gpt_response?context=Intel Corporation is an American multinational corporation and technology company headquartered in Santa Clara, California. It is one of the world's largest semiconductor chip manufacturer by revenue, and is one of the developers of the x86 series of instruction sets found in most personal computers&user=what is intel?
     """
-    context = request.args.get('context')
-    user = request.args.get('user')
+    # context = request.args.get('context')
+    # user = request.args.get('user')
 
     request_data = [
         {"role": "system", "content": "You are a powerful AI chatbot that can answer this question. " + context},
@@ -71,31 +91,36 @@ def get_gpt_response(*args):
         #     messages= request_data,
         # )
         list_resp = ["Intel", " Corporation", " is an American", " multinational", " corporation", " and", " technology", " company", "."]
-        def stream():
-            k = 0
-            while k<len(list_resp):
-                yield '%s\n\n' % ('"delta": {"content": "'+str(list_resp[k])+'"},"finish_reason": null,"index": 0}"')
-                k+=1
-            yield '%s\n\n' % '"delta": {},"finish_reason": "stop","index": 0}"'
-            # uncomment for using live chat gpt api
-            # completion = openai.ChatCompletion.create(
-            #     model="gpt-4",
-            #     messages=request_data,
-            #     stream=True
-            # )
-            # for line in completion:
-            #     yield 'data: %s\n\n' % str(line.choices[0])
-        origin = request.headers['ORIGIN']
-        resp = Response(stream(), mimetype='application/json')
-        resp.headers['Access-Control-Allow-Origin'] = origin
-        return resp
+        async def event_generator():
+            for message in list_resp:
+                yield {"data": str(message)}
+            await asyncio.sleep(STREAM_DELAY)
+        return EventSourceResponse(event_generator())
+
+        
+        # def stream():
+            
+        #     # uncomment for using live chat gpt api
+        #     # completion = openai.ChatCompletion.create(
+        #     #     model="gpt-4",
+        #     #     messages=request_data,
+        #     #     stream=True
+        #     # )
+        #     # for line in completion:
+        #     #     yield 'data: %s\n\n' % str(line.choices[0])
+        # response = StreamingResponse(
+        #     content=stream(),
+        #     status_code=status.HTTP_200_OK,
+        #     media_type="text/event-stream",
+        # )
+        # return response
     except BaseException as error:
-        return jsonify({
+        return {
             "error": str(error),
             "status": "error",
-        })
+        }
 
-@app.route("/setup_new_account")
+@app.get("/setup_new_account")
 def setup_new_account():
     """
     Generate Password Reset Links with email
@@ -124,7 +149,7 @@ def setup_new_account():
             "status": "error",
         })
 
-@app.route("/create_new_account")
+@app.get("/create_new_account")
 def create_new_account():
     """
     Create Account with email and password for new account
@@ -179,5 +204,5 @@ class IncorrectKey(Exception):
         super().__init__(message, *args)
         self.message = message
 
-if __name__ == '__main__':
-    app.run()
+# if __name__ == "__main__":
+#     uvicorn.run("_api:app", host="0.0.0.0", port=8000, reload=True)

@@ -2,7 +2,15 @@ import { React } from "react";
 import Logo from '../assets/logo.svg';
 import '../styles/chat.css';
 
-function ChatContainer({defaultDoc,handleSubmitPrompt,promptValue,handleTextChange,bottomRef,handlePromptExample}){
+function ChatContainer({
+    defaultDoc, 
+    handleSubmitPrompt, 
+    promptValue, 
+    handleTextChange, 
+    bottomRef, 
+    handlePromptExample,
+    forceRender
+}){
     document.title = defaultDoc? defaultDoc.name:"New Chat";
 
     const defaultContainer = (
@@ -78,11 +86,9 @@ function ChatContainer({defaultDoc,handleSubmitPrompt,promptValue,handleTextChan
     })
 
     return (
-        // <Provider config={rollbarConfig}>
-        // <ErrorBoundary>
         <div className="containerWrapper">
             <div className="chatList">
-                {(defaultDoc?.userPrompts?.length && renderedDiv) || defaultContainer}
+                {(defaultDoc?.userPrompts?.length && (forceRender^(!forceRender)) && renderedDiv) || defaultContainer}
                 <div ref={bottomRef}></div>
             </div>
 
@@ -112,8 +118,6 @@ function ChatContainer({defaultDoc,handleSubmitPrompt,promptValue,handleTextChan
                 </form>
             </div>
         </div>
-        // </ErrorBoundary>
-        // </Provider>
     )
 }
 

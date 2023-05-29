@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ChatContainer from './chatcontainer';
 import '../styles/chat.css';
 
-import {SSE} from './sse'
+import { SSE } from "sse";
   
 class DocData {
     constructor(name, userPrompts, gptResponse, folderId, time, uid) {
@@ -59,6 +59,7 @@ function Chat(){
     const [isMessageVisible, setIsMessageVisible] = useState(false)
     const [newFolderCreating, setNewFolderCreating] = useState(false)
     const [folderNameN, setFolderNameN] = useState("")
+    const [forceRender, setForceRender] = useState(true)
     const bottomRef = useRef()
     const [authState, setAuthState] = useState({
         isSignedIn: false,
@@ -269,10 +270,9 @@ function Chat(){
         return obj
     }
 
-    // pending: add chatgpt script
-    async function evalChatgpt(data){
-        console.log(data)
-        return JSON.parse("{"+data+"}").delta.content;
+    function evalResp(data) {
+        setForceRender((state) => !state)
+        return data
     }
 
     async function handleSubmitPrompt(event, prompt=promptValue, defaultdoc=defaultDoc) {
@@ -289,19 +289,26 @@ function Chat(){
         setMessageCount(messageCount+1)
 
         let lastMessage = defaultDoc?.gptResponse?.slice(-1)
-        let SSE_URL = `https://ayushanand18-cuddly-acorn-j47p4r4w64p2j5qg-5000.preview.app.github.dev/get_gpt_response?context=${lastMessage}&user=${prompt}`
-        
+        let SSE_URL = `https://8000-ayushanand1-custombrand-sscwxw1m6v2.ws-us98.gitpod.io/get_gpt_response?context=${lastMessage}&user=${prompt}` // test
+        // let SSE_URL = `https://fast_api-1-j3073514.deta.app/get_gpt_response?context=${lastMessage}&user=${prompt}` // production
+
         let response = ""
         if(newDefaultDoc?.userPrompts) newDefaultDoc.gptResponse.push(response)
         else newDefaultDoc.gptResponse = [response]
 
-        let source = new SSE(SSE_URL)
-        source.addEventListener('message', function(e) {
-            // Assuming we receive JSON-encoded data payloads:
-            response += evalChatgpt(e.source.chunk)
+        let source = new SSE(SSE_URL);
+    
+        source.addEventListener("message", (e) => {
+            console.log(e.data)
+            response += e.data
             newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = response
             setDefaultDoc(newDefaultDoc)
         });
+    
+        source.addEventListener("readystatechange", (e) => {
+            console.log("ready")
+        });
+    
         source.stream();
 
         await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultdoc.uid), {
@@ -773,6 +780,7 @@ function Chat(){
                         handleTextChange={handleTextChange}
                         bottomRef={bottomRef}
                         handlePromptExample={handlePromptExample}
+                        forceRender={forceRender}
                         />
                 </div>
             </div>
