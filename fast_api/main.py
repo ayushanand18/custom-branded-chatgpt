@@ -1,7 +1,6 @@
 # main.py
 
 import os
-import asyncio
 from dotenv import load_dotenv
 from fastapi import FastAPI, status, Request
 from starlette.responses import StreamingResponse
@@ -91,7 +90,7 @@ def get_gpt_response(context, user, request:Request):
         async def event_generator():
             for message in list_resp:
                 yield {"data": str(message)}
-            # request.close()
+            await request.close()
         return EventSourceResponse(event_generator())
 
         # def stream():
