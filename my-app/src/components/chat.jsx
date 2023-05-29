@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import ChatContainer from './chatcontainer';
 import '../styles/chat.css';
 
+import {SSE} from './sse'
+  
 class DocData {
     constructor(name, userPrompts, gptResponse, folderId, time, uid) {
         this.name = name
@@ -173,13 +175,11 @@ function Chat(){
     }
 
     function handleChatNameUpdate(event, chat_id) {
-        console.log(event.target.value)
         chatList[chat_id].name = event.target.textContent
         setChatList(chatList)
     }
 
     async function handleChatRename(chat_id) {
-        console.log(chatList[chat_id].name)
         await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, chatList[chat_id]?.uid), {
             name: chatList[chat_id].name
         })
@@ -270,8 +270,9 @@ function Chat(){
     }
 
     // pending: add chatgpt script
-    function evalChatgpt(prompt){
-        return (new Array(2).fill(String(prompt)+" ").reduce((acc, t) => acc+t))
+    async function evalChatgpt(data){
+        console.log(data)
+        return JSON.parse("{"+data+"}").delta.content;
     }
 
     async function handleSubmitPrompt(event, prompt=promptValue, defaultdoc=defaultDoc) {
@@ -280,24 +281,35 @@ function Chat(){
             defaultdoc = await handleNewChatInitiate()
         }
         let newDefaultDoc = defaultdoc;
-        console.log(newDefaultDoc)
         if(newDefaultDoc?.userPrompts) newDefaultDoc.userPrompts.push(prompt)
         else newDefaultDoc.userPrompts = [prompt]
-        
+
         setPromptValue("")
         setDefaultDoc(newDefaultDoc)
         setMessageCount(messageCount+1)
 
-        let response = evalChatgpt(newDefaultDoc.userPrompts.slice(-1))
+        let lastMessage = defaultDoc?.gptResponse?.slice(-1)
+        let SSE_URL = `https://ayushanand18-cuddly-acorn-j47p4r4w64p2j5qg-5000.preview.app.github.dev/get_gpt_response?context=${lastMessage}&user=${prompt}`
+        
+        let response = ""
         if(newDefaultDoc?.userPrompts) newDefaultDoc.gptResponse.push(response)
         else newDefaultDoc.gptResponse = [response]
+
+        let source = new SSE(SSE_URL)
+        source.addEventListener('message', function(e) {
+            // Assuming we receive JSON-encoded data payloads:
+            response += evalChatgpt(e.source.chunk)
+            newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = response
+            setDefaultDoc(newDefaultDoc)
+        });
+        source.stream();
 
         await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultdoc.uid), {
             userPrompts: newDefaultDoc.userPrompts,
             gptResponse: newDefaultDoc.gptResponse
         })
         .catch((error)=>console.log(error));
-        
+
         setDefaultDoc(newDefaultDoc)
         setMessageCount(messageCount+1)
     }
@@ -452,11 +464,6 @@ function Chat(){
         return (
             <li key={index+"li"} className='listItem'
                 style={{flexDirection:"column"}}>
-                {/* 
-                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                    $$$$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                */}
                 <div
                     className={(chat_id===defaultDoc?.uid)?'divLi hovered':'divLi'} 
                     style={{width: "100%", flexDirection:"row", background:"inherit"}}

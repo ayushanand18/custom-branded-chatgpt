@@ -6,6 +6,7 @@ import pickle
 from dotenv import load_dotenv
 import flask
 from flask import Flask, request, jsonify
+from flask_cors import cross_origin, CORS
 import firebase_admin
 from firebase_admin import auth as Auth
 from firebase_admin import credentials
@@ -13,9 +14,9 @@ import openai
 import random
 import string
 
-app = Flask(__name__)
 load_dotenv()
-
+app = Flask(__name__)
+CORS(app)
 #--------------------
 # Environment
 #--------------------
@@ -35,8 +36,8 @@ db_app = firebase_admin.initialize_app(cred)
 
 # as a security measure we will not define a home ('/') root
 # so as to make people believe that this endpoint is not functional
-
 @app.route("/get_gpt_response")
+@cross_origin()
 def get_gpt_response():
     """
     GPT4 response generation
@@ -63,15 +64,27 @@ def get_gpt_response():
         #     model="gpt-4",
         #     messages= request_data,
         # )
+        list_resp = ["Intel", " Corporation", " is an American", " multinational", " corporation", " and", " technology", " company", "."]
         def stream():
-            completion = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=request_data,
-                stream=True
-            )
-            for line in completion:
-                yield 'data: %s\n\n' % str(line.choices[0])
-        return flask.Response(stream(), mimetype='text/event-stream')
+            k = 0
+            while k<len(list_resp):
+                yield '%s\n\n' % ('"delta": {"content": "'+str(list_resp[k])+'"},"finish_reason": null,"index": 0}"')
+                k+=1
+            yield '%s\n\n' % '"delta": {},"finish_reason": "stop","index": 0}"'
+            # uncomment for using live chat gpt api
+            # completion = openai.ChatCompletion.create(
+            #     model="gpt-4",
+            #     messages=request_data,
+            #     stream=True
+            # )
+            # for line in completion:
+            #     yield 'data: %s\n\n' % str(line.choices[0])
+        response = flask.Response(stream(), mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', 'https://ayushanand18-cuddly-acorn-j47p4r4w64p2j5qg-3000.preview.app.github.dev/')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
     except BaseException as error:
         return jsonify({
             "error": str(error),
