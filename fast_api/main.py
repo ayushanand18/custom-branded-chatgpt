@@ -22,7 +22,7 @@ origins = [
     "http://localhost",
     "http://localhost:8080",
     "https://3000-ayushanand1-custombrand-sscwxw1m6v2.ws-us98.gitpod.io",
-    "https://custom-branded-chatgpt.vercel.app/",
+    "https://custom-branded-chatgpt.vercel.app/"
 ]
 
 app.add_middleware(
@@ -60,8 +60,7 @@ def test():
     resp.headers['Access-Control-Allow-Origin'] = origin
     return resp
 
-STREAM_DELAY = 1  # second
-RETRY_TIMEOUT = 15000  # milisecond
+RETRY_TIMEOUT = 1000  # milisecond
 
 @app.get("/get_gpt_response")
 def get_gpt_response(context, user, request:Request):
@@ -77,8 +76,6 @@ def get_gpt_response(context, user, request:Request):
     ::Usage
         /get_gpt_response?context=Intel Corporation is an American multinational corporation and technology company headquartered in Santa Clara, California. It is one of the world's largest semiconductor chip manufacturer by revenue, and is one of the developers of the x86 series of instruction sets found in most personal computers&user=what is intel?
     """
-    # context = request.args.get('context')
-    # user = request.args.get('user')
 
     request_data = [
         {"role": "system", "content": "You are a powerful AI chatbot that can answer this question. " + context},
@@ -94,10 +91,9 @@ def get_gpt_response(context, user, request:Request):
         async def event_generator():
             for message in list_resp:
                 yield {"data": str(message)}
-            await asyncio.sleep(STREAM_DELAY)
+            # request.close()
         return EventSourceResponse(event_generator())
 
-        
         # def stream():
             
         #     # uncomment for using live chat gpt api
@@ -203,6 +199,3 @@ class IncorrectKey(Exception):
     def __init__(self, message="invalid passkey supplied", *args):
         super().__init__(message, *args)
         self.message = message
-
-# if __name__ == "__main__":
-#     uvicorn.run("_api:app", host="0.0.0.0", port=8000, reload=True)

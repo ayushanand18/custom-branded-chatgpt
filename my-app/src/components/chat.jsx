@@ -289,8 +289,8 @@ function Chat(){
         setMessageCount(messageCount+1)
 
         let lastMessage = defaultDoc?.gptResponse?.slice(-1)
-        let SSE_URL = `https://8000-ayushanand1-custombrand-sscwxw1m6v2.ws-us98.gitpod.io/get_gpt_response?context=${lastMessage}&user=${prompt}` // test
-        // let SSE_URL = `https://fast_api-1-j3073514.deta.app/get_gpt_response?context=${lastMessage}&user=${prompt}` // production
+        // let SSE_URL = `https://5000-ayushanand1-custombrand-sscwxw1m6v2.ws-us98.gitpod.io//get_gpt_response?context=${lastMessage}&user=${prompt}` // test
+        let SSE_URL = `https://custom-branded-chatgpt-api.vercel.app/get_gpt_response?context=${lastMessage}&user=${prompt}` // production
 
         let response = ""
         if(newDefaultDoc?.userPrompts) newDefaultDoc.gptResponse.push(response)

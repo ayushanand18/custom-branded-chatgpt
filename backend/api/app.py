@@ -4,7 +4,7 @@ API for backend to Custom Branded ChatGPT
 import os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, Response
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import firebase_admin
 from firebase_admin import auth as Auth
 from firebase_admin import credentials
@@ -14,7 +14,6 @@ import string
 
 load_dotenv()
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*":{"origins":''}})
 
 #--------------------
 # Environment
@@ -44,6 +43,7 @@ def test():
     return resp
 
 @app.route("/get_gpt_response", methods=["GET"])
+@cross_origin()
 def get_gpt_response(*args):
     """
     GPT4 response generation
