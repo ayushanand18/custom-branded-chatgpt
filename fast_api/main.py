@@ -81,34 +81,21 @@ async def get_gpt_response(context, user, request:Request):
         {"role": "user", "content": user},
     ]
 
-    try:    
-        # response = openai.ChatCompletion.create(
-        #     model="gpt-4",
-        #     messages= request_data,
-        # )
-        list_resp = ["Intel", " Corporation", " is an American", " multinational", " corporation", " and", " technology", " company", "."]
+    try:
+        # list_resp = ["Intel", " Corporation", " is an American", " multinational", " corporation", " and", " technology", " company", "."]
         async def event_generator():
-            for message in list_resp:
-                yield {"data": str(message)}
+            completion = openai.ChatCompletion.create(
+                model="gpt-4",
+                messages=request_data,
+                stream=True
+            )
+            for line in completion:
+                if("content" not in line.choices[0].delta.keys()): continue
+                yield {"data": str(line.choices[0].delta.content)}
+            # for message in list_resp:
+            #     yield {"data": str(message)}
             await request.close()
         return EventSourceResponse(event_generator())
-
-        # def stream():
-            
-        #     # uncomment for using live chat gpt api
-        #     # completion = openai.ChatCompletion.create(
-        #     #     model="gpt-4",
-        #     #     messages=request_data,
-        #     #     stream=True
-        #     # )
-        #     # for line in completion:
-        #     #     yield 'data: %s\n\n' % str(line.choices[0])
-        # response = StreamingResponse(
-        #     content=stream(),
-        #     status_code=status.HTTP_200_OK,
-        #     media_type="text/event-stream",
-        # )
-        # return response
     except BaseException as error:
         return {
             "error": str(error),
