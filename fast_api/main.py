@@ -91,7 +91,7 @@ async def get_gpt_response(context, user, request:Request):
             )
             for line in completion:
                 if("content" not in line.choices[0].delta.keys()): continue
-                yield {"data": str(line.choices[0].delta.content)}
+                yield {"data": " "+str(line.choices[0].delta.content)}
             # for message in list_resp:
             #     yield {"data": str(message)}
             await request.close()
