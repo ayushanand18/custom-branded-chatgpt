@@ -301,7 +301,7 @@ function Chat(){
 
         source.addEventListener("message", async (e) => {
             console.log(e.data)
-            response += " " + e.data
+            response += e.data.slice(1, -1)
             newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = response
             setForceRender((state) => !state)
         });
