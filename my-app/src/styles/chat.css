@@ -1758,3 +1758,26 @@ summary{ list-style: none }
 .shortHandMenu-Item:hover {
     background-color: #6e6e80;
 }
+.blinkBox {
+    padding: 0 50px 0 10px;
+    border: 2px solid #656464;
+    border-radius: 10px;
+}
+.blinkBox h5{
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+@keyframes cursor-blink {
+    0% {
+        opacity: 0;
+    }
+}
+.blinkBox h5::after {
+    content: "";
+    width: 7px;
+    height: 20px;
+    background: black;
+    display: inline-block;
+    animation: cursor-blink 1s steps(2) infinite;
+}

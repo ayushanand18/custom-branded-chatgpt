@@ -292,33 +292,35 @@ function Chat(){
         // let SSE_URL = `https://8000-ayushanand1-custombrand-sscwxw1m6v2.ws-us98.gitpod.io/get_gpt_response?context=${lastMessage}&user=${prompt}` // test
         let SSE_URL = `https://custom-branded-chatgpt-api.onrender.com/get_gpt_response?context=${lastMessage}&user=${prompt}` // production
 
-        let response = ""
+        let response = "thinking ..."
+        let resp = ""
         if(newDefaultDoc?.userPrompts) newDefaultDoc.gptResponse.push(response)
         else newDefaultDoc.gptResponse = [response]
+        setDefaultDoc(newDefaultDoc)
 
         let source = new SSE(SSE_URL);
 
         source.addEventListener("message", async (e) => {
             console.log(e.data)
-            response += " " + e.data
-            newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = response
+            resp += " " + e.data
+            newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = resp
             setForceRender((state) => !state)
         });
-    
+
         source.addEventListener("readystatechange", (e) => {
             console.log("ready")
         });
-    
+
         source.stream();
 
+        newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = resp
+        setDefaultDoc(newDefaultDoc)
+        setMessageCount(messageCount+1)
         await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultdoc.uid), {
             userPrompts: newDefaultDoc.userPrompts,
             gptResponse: newDefaultDoc.gptResponse
         })
-        .catch((error)=>console.log(error));
-
-        setDefaultDoc(newDefaultDoc)
-        setMessageCount(messageCount+1)
+        .catch((error)=>console.log(error));        
     }
 
     async function handleDeleteChat(chat_id){
