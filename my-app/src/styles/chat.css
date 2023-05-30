@@ -1759,11 +1759,9 @@ summary{ list-style: none }
     background-color: #6e6e80;
 }
 .blinkBox {
-    padding: 0 50px 0 10px;
-    border: 2px solid #656464;
-    border-radius: 10px;
+    padding: 0 10px 0 0px;
 }
-.blinkBox h5{
+.blinkBox span{
     display: flex;
     align-items: center;
     gap: 2px;
@@ -1773,7 +1771,7 @@ summary{ list-style: none }
         opacity: 0;
     }
 }
-.blinkBox h5::after {
+.blinkBox span::after {
     content: "";
     width: 7px;
     height: 20px;

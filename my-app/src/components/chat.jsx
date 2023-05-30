@@ -292,8 +292,7 @@ function Chat(){
         // let SSE_URL = `https://8000-ayushanand1-custombrand-sscwxw1m6v2.ws-us98.gitpod.io/get_gpt_response?context=${lastMessage}&user=${prompt}` // test
         let SSE_URL = `https://custom-branded-chatgpt-api.onrender.com/get_gpt_response?context=${lastMessage}&user=${prompt}` // production
 
-        let response = "thinking ..."
-        let resp = ""
+        let response = ""
         if(newDefaultDoc?.userPrompts) newDefaultDoc.gptResponse.push(response)
         else newDefaultDoc.gptResponse = [response]
         setDefaultDoc(newDefaultDoc)
@@ -302,25 +301,24 @@ function Chat(){
 
         source.addEventListener("message", async (e) => {
             console.log(e.data)
-            resp += " " + e.data
-            newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = resp
+            response += " " + e.data
+            newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = response
             setForceRender((state) => !state)
         });
 
-        source.addEventListener("readystatechange", (e) => {
-            console.log("ready")
+        source.addEventListener("readystatechange", async (e) => {
+            setForceRender((state) => !state)
+            setMessageCount(messageCount+1)
+            await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultdoc.uid), {
+                userPrompts: newDefaultDoc.userPrompts,
+                gptResponse: newDefaultDoc.gptResponse
+            })
+            .catch((error)=>console.log(error));
         });
 
-        source.stream();
+        source.stream();      
 
-        newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = resp
         setDefaultDoc(newDefaultDoc)
-        setMessageCount(messageCount+1)
-        await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultdoc.uid), {
-            userPrompts: newDefaultDoc.userPrompts,
-            gptResponse: newDefaultDoc.gptResponse
-        })
-        .catch((error)=>console.log(error));        
     }
 
     async function handleDeleteChat(chat_id){
