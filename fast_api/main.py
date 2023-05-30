@@ -52,7 +52,7 @@ db_app = firebase_admin.initialize_app(cred)
 # as a security measure we will not define a home ('/') root
 # so as to make people believe that this endpoint is not functional
 @app.get("/test")
-def test():
+async def test():
     return "hello"
     origin = request.environ.get('HTTP_ORIGIN', '*')
     # resp = flask.Response(origin)
@@ -62,7 +62,7 @@ def test():
 RETRY_TIMEOUT = 1000  # milisecond
 
 @app.get("/get_gpt_response")
-def get_gpt_response(context, user, request:Request):
+async def get_gpt_response(context, user, request:Request):
     """
     GPT4 response generation
 
@@ -116,7 +116,7 @@ def get_gpt_response(context, user, request:Request):
         }
 
 @app.get("/setup_new_account")
-def setup_new_account():
+async def setup_new_account():
     """
     Generate Password Reset Links with email
 
@@ -145,7 +145,7 @@ def setup_new_account():
         })
 
 @app.get("/create_new_account")
-def create_new_account():
+async def create_new_account():
     """
     Create Account with email and password for new account
 
