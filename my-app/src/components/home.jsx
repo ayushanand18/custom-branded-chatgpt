@@ -29,6 +29,7 @@ function Home() {
             setAuthState({ user, pending: false, isSignedIn: !!user })
         )
         return () => unregisterAuthObserver()
+        // eslint-disable-next-line
     }, [])
     
     if (authState.pending) {

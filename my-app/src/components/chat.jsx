@@ -270,6 +270,7 @@ function Chat(){
         return obj
     }
 
+    // eslint-disable-next-line
     function evalResp(data) {
         setForceRender((state) => !state)
         return data
@@ -301,9 +302,10 @@ function Chat(){
 
         source.addEventListener("message", async (e) => {
             console.log(e.data)
-            response += e.data.slice(1, -1)
+            if(e.data[0]==="'") response += e.data.slice(1, -1)
             newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = response
             setForceRender((state) => !state)
+            setMessageCount(messageCount+1)
         });
 
         source.addEventListener("readystatechange", async (e) => {
