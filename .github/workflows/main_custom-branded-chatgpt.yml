@@ -15,6 +15,9 @@ jobs:
     defaults:
       run:
         working-directory: './my-app/'
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     steps:
       - uses: actions/checkout@v2
 
@@ -27,32 +30,13 @@ jobs:
         run: |
           yarn
           yarn run build --if-present
-      - run: |
-          zip -r node-app.zip .
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
-        with:
-          name: node-app
-          path: node-app.zip
-
-  deploy:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: './my-app/'
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v2
-        with:
-          name: node-app
-      - run: |
-          unzip node-app.zip
-          rm node-app.zip
+#       - run: |
+#           zip -r node-app.zip .
+#       - name: Upload artifact for deployment job
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: node-app
+#           path: node-app.zip
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
@@ -61,3 +45,30 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B61542EE82A047B9AB828648C58C7BED }}
           package: .
+
+#   deploy:
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         working-directory: './my-app/'
+#     needs: build
+#     environment:
+#       name: 'Production'
+#       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+#     steps:
+#       - name: Download artifact from build job
+#         uses: actions/download-artifact@v2
+#         with:
+#           name: node-app
+#       - run: |
+#           unzip node-app.zip
+#           rm node-app.zip          
+#       - name: 'Deploy to Azure Web App'
+#         id: deploy-to-webapp
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: 'custom-branded-chatgpt'
+#           slot-name: 'Production'
+#           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B61542EE82A047B9AB828648C58C7BED }}
+#           package: .
