@@ -21,7 +21,8 @@ origins = [
     "http://localhost",
     "http://localhost:8080",
     "https://3000-ayushanand1-custombrand-sscwxw1m6v2.ws-us98.gitpod.io",
-    "https://custom-branded-chatgpt.vercel.app/"
+    "https://custom-branded-chatgpt.vercel.app/",
+    "https://stirring-kataifi-c20d4c.netlify.app/",
 ]
 
 app.add_middleware(
