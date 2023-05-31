@@ -98,7 +98,10 @@ async def get_gpt_response(context, user, request:Request):
             # for message in list_resp:
             #     yield {"data": str(message)}
             request.close()
-        return EventSourceResponse(event_generator())
+        # return EventSourceResponse(event_generator())
+        resp = EventSourceResponse(event_generator())
+        resp.headers["Access-Control-Allow-Origin"] = '*'
+        return resp
     except BaseException as error:
         return {
             "error": str(error),
