@@ -36,13 +36,13 @@ function ChatContainer({
                 </h2>
                 <ul>
                     <button onClick={handlePromptExample}>
-                        "Explain quantum computing in simple terms" →
+                        "What is the capital of France?" →
                     </button>
                     <button onClick={handlePromptExample}>
-                        "Got any creative ideas for a 10 year old's birthday?" →
+                        "Can you recommend any good books to read?" →
                     </button>
                     <button onClick={handlePromptExample}>
-                        "How do I make an HTTP request in Javascript?" →
+                        "What is the average temperature of the Earth?" →
                     </button>
                 </ul>
             </div>
