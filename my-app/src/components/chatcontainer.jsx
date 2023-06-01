@@ -93,7 +93,13 @@ function ChatContainer({
 
     return (
         <div className="containerWrapper">
-            <div className="chatList">
+            <div
+                className="chatList"
+                style={{
+                    display: (!defaultDoc || !defaultDoc.userPrompts.length)?"flex":"block", 
+                    justifyContent: "center"
+                }}
+                >
                 {(defaultDoc?.userPrompts?.length && (forceRender^(!forceRender)) && renderedDiv) || defaultContainer}
                 <div ref={bottomRef}></div>
             </div>

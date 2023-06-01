@@ -483,6 +483,13 @@
     flex-direction: row;
     align-items: center;
 }
+.bg-white-hover{
+    padding-top: .4rem;
+    padding-bottom: .4rem;
+}
+.listItem:hover{
+    background-color: rgba(42,43,50,1) !important;
+}
 .addFolder {
     vertical-align: middle;
     display: flex;

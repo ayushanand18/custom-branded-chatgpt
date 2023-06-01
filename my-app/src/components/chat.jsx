@@ -235,6 +235,7 @@ function Chat(){
         setIsMessageVisible(true)
         setTimeout(()=>{
             setIsMessageVisible(false)
+            chatList[chat_id].showFolderDialog = false;
         }, 2500)
     }
 
@@ -436,7 +437,7 @@ function Chat(){
         return (
         <details>
             <summary>
-                <li key={folder_id+"li"} style={{display: "flex",justifyContent: "space-between",alignItems: "center"}} className="listItem">
+                <li key={folder_id+"li"} style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} className="listItem bg-white-hover">
                     <span style={{display:"flex", gap:".4rem", alignItems: "center"}}>
                         <svg key={folder_id} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128" width="36" height="36">
                             <path stroke="#fff" strokeLinecap="round" strokeWidth="6" d="M26 45.5C26 35.835 33.835 28 43.5 28V28L55.3399 28C58.7317 28 61.7549 30.1389 62.8838 33.3374L65.1727 39.8226C66.2737 42.9422 69.1813 45.0623 72.4881 45.1568L84.5 45.5V45.5C94.0831 45.2262 102 52.9202 102 62.5071L102 74.5V80C102 90.4934 93.4934 99 83 99V99L64 99L45 99V99C34.5066 99 26 90.4934 26 80L26 66L26 45.5Z" ></path>
@@ -456,7 +457,7 @@ function Chat(){
             <p key={folder_id+"p"} className="openFolderChats" style={{marginTop:"0px", marginBottom:'0px'}}>
                 <ul key={folder_id+"ul"}>{
                     folders[folder_id].chats?.map((chat_id) => {
-                        return (<li key={chat_id} className="listItem" onClick={() => {
+                        return (<li key={chat_id} className="listItem" style={{borderBottom: "1px solid #818181"}} onClick={() => {
                             setDefaultDoc(chatList[chat_id]) 
                             setMessageCount(messageCount+1)
                         }}>
