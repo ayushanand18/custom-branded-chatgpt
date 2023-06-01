@@ -106,7 +106,7 @@ function Chat(){
         })
 
         setChatList(chatDocs)
-        setDefaultDoc(chatDocs[userData.data().pinnedChats[0]])
+        // setDefaultDoc(chatDocs[userData.data().pinnedChats[0]]) 
         // setFolderNames(userData.data().folderNames)
         // setFolderIds(userData.data().folderIds)
         setPinnedChats(userData.data().pinnedChats)
@@ -271,11 +271,6 @@ function Chat(){
         return obj
     }
 
-    // eslint-disable-next-line
-    function evalResp(data) {
-        setForceRender((state) => !state)
-        return data
-    }
 
     async function handleSubmitPrompt(event, prompt=promptValue, defaultdoc=defaultDoc) {
         event.preventDefault()
