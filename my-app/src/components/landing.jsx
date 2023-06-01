@@ -18,7 +18,7 @@ function LandingApp() {
                     Welcome to ChatGPT
                 </div>
                 <div className="welcomeBody">
-                    Log in with your OpenAI account to continue
+                    Log in with your account to continue
                 </div>
                 <div className="buttonSet">
                     <Link to="/auth/login" className="button loginButton">Log in</Link>

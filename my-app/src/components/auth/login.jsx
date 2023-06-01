@@ -1,10 +1,10 @@
-import { React, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import logo from '../../assets/logo.svg';
-import Chat from '../../components/chat.jsx';
-import '../../styles/auth.css';
+import { React, useState, useEffect } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { initializeApp } from "firebase/app"
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
+import logo from '../../assets/logo.svg'
+import Chat from '../../components/chat.jsx'
+import '../../styles/auth.css'
 
 function Login() {
     const firebaseConfig = {

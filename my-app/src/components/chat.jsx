@@ -1,9 +1,9 @@
-import { React, useState, useEffect, useRef } from "react";
-import { initializeApp } from "firebase/app";
-import { getAuth, signOut, updateProfile } from "firebase/auth";
-import { doc, addDoc, getDoc, deleteDoc, getDocs, getFirestore, collection, updateDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
-import ChatContainer from './chatcontainer';
+import { React, useState, useEffect, useRef } from "react"
+import { initializeApp } from "firebase/app"
+import { getAuth, signOut, updateProfile } from "firebase/auth"
+import { doc, addDoc, getDoc, deleteDoc, getDocs, getFirestore, collection, updateDoc } from "firebase/firestore"
+import { useNavigate } from "react-router-dom"
+import ChatContainer from './chatcontainer'
 import '../styles/chat.css';
 
 import { SSE } from "sse";
@@ -607,7 +607,7 @@ function Chat(){
                             <line x1="3" y1="18" x2="21" y2="18"></line>
                         </svg>
                     </button>
-                    <h1 className="flexTextNormal">{(defaultDoc && defaultDoc?.name) || `ChatGPT` }</h1>
+                    <h1 className="flexTextNormal">{(defaultDoc && defaultDoc?.name) || `GPT-4` }</h1>
                     {/* 
                     hiding this add button for now
                     <button type="button" className="buttonAdd">

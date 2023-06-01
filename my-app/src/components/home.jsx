@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import Landing from "../components/landing";
 import Chat from "../components/chat";
+import Waiting from './waiting'
 
 function Home() {
     const firebaseConfig = {
@@ -33,7 +34,7 @@ function Home() {
     }, [])
     
     if (authState.pending) {
-        return <h1>waiting...</h1>
+        return <Waiting />
     }
     else {
         console.log(authState.isSignedIn)

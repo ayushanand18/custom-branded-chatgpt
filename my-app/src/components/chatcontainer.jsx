@@ -17,7 +17,7 @@ function ChatContainer({
         <div className="defaultContainer">
             <h1>
                 <img src={Logo} className="appLogo" alt="logo" width="2em"/>
-                ChatGPT
+                ChatGPT <span className="rounded-md text-lg"> GPT-4</span>
             </h1>
             <div className="dcf1">
                 <h2 className="dch2">

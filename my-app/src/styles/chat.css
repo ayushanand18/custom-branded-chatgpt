@@ -1786,3 +1786,7 @@ summary{ list-style: none }
     display: inline-block;
     animation: cursor-blink 1s steps(2) infinite;
 }
+.text-lg {
+    font-size: 1.2rem;
+    padding: .5rem;
+}

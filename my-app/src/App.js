@@ -1,8 +1,9 @@
-import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
-import Home from "./components/home";
-import Login from "./components/auth/login";
-import Signup from "./components/auth/signup";
-import NotFound from "./components/notfound";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom"
+import Home from "./components/home"
+import Login from "./components/auth/login"
+import Signup from "./components/auth/signup"
+import NotFound from "./components/notfound"
+import Waiting from "./components/waiting"
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route exact path="/auth/login" element={<Login />} />
         <Route exact path="/auth/signup" element={<Signup />} />
         <Route exact path="/404" element={<NotFound />}/>
+        <Route exact path="/waiting" element={<Waiting />}/>
         <Route exact path="*" element={<Navigate to="/404" />} />
         <Route exact path="/" element={<Home />}>
         </Route>
@@ -19,4 +21,4 @@ function App() {
   );
 }
 
-export default App;
+export default App
