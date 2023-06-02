@@ -61,6 +61,7 @@ function Chat(){
     const [newFolderCreating, setNewFolderCreating] = useState(false)
     const [folderNameN, setFolderNameN] = useState("")
     const [forceRender, setForceRender] = useState(true)
+    const [showStopGen, setShowStopGen] = useState(false)
     const bottomRef = useRef()
     const [authState, setAuthState] = useState({
         isSignedIn: false,
@@ -272,7 +273,6 @@ function Chat(){
         return obj
     }
 
-
     async function handleSubmitPrompt(event, prompt=promptValue, defaultdoc=defaultDoc) {
         event.preventDefault()
         if(!defaultdoc) {
@@ -306,6 +306,7 @@ function Chat(){
         });
 
         source.addEventListener("readystatechange", async (e) => {
+            setShowStopGen((state) => !state)
             setForceRender((state) => !state)
             setMessageCount(messageCount+1)
             await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultdoc.uid), {
@@ -318,6 +319,7 @@ function Chat(){
         source.stream();      
 
         setDefaultDoc(newDefaultDoc)
+        setShowStopGen((state) => !state)
     }
 
     async function handleDeleteChat(chat_id){
@@ -613,14 +615,6 @@ function Chat(){
                         </svg>
                     </button>
                     <h1 className="flexTextNormal">{(defaultDoc && defaultDoc?.name) || `GPT-4` }</h1>
-                    {/* 
-                    hiding this add button for now
-                    <button type="button" className="buttonAdd">
-                        <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" className="h-6 w-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                    </button> */}
                 </div>
                 <div className="navSection" style={{display:openNav?"flex":"none"}}>
                     <div className="flexDiv">
@@ -784,6 +778,7 @@ function Chat(){
                         bottomRef={bottomRef}
                         handlePromptExample={handlePromptExample}
                         forceRender={forceRender}
+                        showStopGen={showStopGen}
                         />
                 </div>
             </div>
