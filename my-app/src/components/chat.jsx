@@ -19,6 +19,7 @@ class DocData {
         this.showFolderDialog = false
         this.showContentEdit = false
         this.showThreeDotMenu = false
+        this.showThreeDots = false
     }
 }
 
@@ -468,7 +469,10 @@ function Chat(){
     const allChats = Object.keys(chatList)?.map((chat_id, index) => {
         return (
             <li key={index+"li"} className='listItem'
-                style={{flexDirection:"column"}}>
+                style={{flexDirection:"column"}}
+                onMouseEnter={() => chatList[chat_id].showThreeDots = true}
+                onMouseLeave={() => chatList[chat_id].showThreeDots = false}
+                >
                 <div
                     className={(chat_id===defaultDoc?.uid)?'divLi hovered':'divLi'} 
                     style={{width: "100%", flexDirection:"row", background:"inherit"}}
@@ -499,8 +503,9 @@ function Chat(){
                     </span>
 
                     <span 
-                        style={{minWidth: "20px",  display: "flex", justifyContent:"center", padding: "0 .5em 0 .5em"}} 
-                        onClick={() => {setOpenedDocId((x) => x?null:chat_id)}}>
+                        style={{minWidth: "20px",  display: chatList[chat_id].showThreeDots?"flex":"none", justifyContent:"center", padding: "0 .5em 0 .5em"}} 
+                        onClick={() => {setOpenedDocId((x) => x?null:chat_id)}}
+                        >
                         <img 
                             src="https://img.uxwing.com/wp-content/themes/uxwing/download/web-app-development/more-options-icon.svg" 
                             height="20px" 
