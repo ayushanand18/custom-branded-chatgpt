@@ -730,7 +730,8 @@ summary{ list-style: none }
 }
 .divFour>textarea{
     max-height: 200px;
-    height: 24px;
+    min-height: 24px;
+    height: auto;
     overflow-y: hidden;
     -webkit-text-size-adjust: 100%;
     tab-size: 4;

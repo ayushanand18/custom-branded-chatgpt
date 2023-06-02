@@ -382,6 +382,15 @@ function Chat(){
 
     function handleTextChange(event) {
         event.preventDefault()
+        event.target.style.height = "auto";
+
+        if (event.target.scrollHeight <= 200) {
+            event.target.style.height = event.target.scrollHeight + "px";
+            event.target.style.overflowY = "hidden";
+        } else {
+            event.target.style.height = "200px";
+            event.target.style.overflowY = "scroll";
+        }
         setPromptValue(event.target.value)
     }
 
