@@ -13,8 +13,11 @@
     "fs": "^0.0.1-security",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-markdown": "^8.0.7",
     "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",
+    "rehype-highlight": "^6.0.0",
+    "remark-gfm": "^3.0.1",
     "rollbar": "^2.26.1",
     "sse": "https://github.com/mpetazzoni/sse.js",
     "web-vitals": "^2.1.0"

@@ -298,8 +298,12 @@ function Chat(){
         let source = new SSE(SSE_URL);
 
         source.addEventListener("message", async (e) => {
-            console.log(e.data)
-            if(e.data[0]==="'") response += e.data.slice(1, -1)
+            console.log(e.data, e.data.length)
+            if(e.data.length===1) response += `\n`
+            else if(e.data[0]==="'") {
+                if(e.data[e.data.length-1]==="'") response += e.data.slice(1, -1)
+                else response += e.data.slice(1)
+            }
             newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = response
             setForceRender((state) => !state)
             setMessageCount(messageCount+1)

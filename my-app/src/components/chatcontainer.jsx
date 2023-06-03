@@ -1,6 +1,10 @@
-import { React } from "react";
-import Logo from '../assets/logo.svg';
-import '../styles/chat.css';
+import { React } from "react"
+import Logo from '../assets/logo.svg'
+import ReactMarkdown from 'react-markdown'
+import rehypeRaw from "rehype-raw"
+import remarkGfm from "remark-gfm"
+import rehypeHighlight from "rehype-highlight"
+import '../styles/chat.css'
 
 function ChatContainer({
     defaultDoc, 
@@ -87,7 +91,14 @@ function ChatContainer({
                                 className="blinkBox">
                                 <span></span>
                             </span>
-                            {(forceRender^(!forceRender)) && defaultDoc.gptResponse[index]}</div>
+                                {(forceRender^(!forceRender)) && 
+                                <div style={{display: "block"}} >
+                                    <ReactMarkdown 
+                                        children={defaultDoc.gptResponse[index]} 
+                                        rehypePlugins={[rehypeRaw, remarkGfm, rehypeHighlight]}>
+                                    </ReactMarkdown>
+                                </div>}
+                            </div>
                     </div>
                 </div>
             </div>
