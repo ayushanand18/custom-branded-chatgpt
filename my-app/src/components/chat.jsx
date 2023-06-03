@@ -55,7 +55,7 @@ function Chat(){
     const [openedDocId, setOpenedDocId] = useState(null)
     const [promptValue, setPromptValue] = useState("")
     const [isOverlayTwo, setIsOverlayTwo] = useState(false)
-    const [messageCount, setMessageCount] = useState(0)
+    const [messageCount, setMessageCount] = useState(false)
     const [newFolderName, setNewFolderName] = useState("")
     const [isMessageVisible, setIsMessageVisible] = useState(false)
     const [newFolderCreating, setNewFolderCreating] = useState(false)
@@ -87,6 +87,12 @@ function Chat(){
     }, []);
 
     useEffect(() => {
+        if(defaultDoc && defaultDoc.uid && defaultDoc.name.slice(0, 8)==='new chat' && defaultDoc.gptResponse<=1) {
+            defaultDoc.name = "rename chat first"
+        }
+    }, [defaultDoc])
+
+    useEffect(() => {
         bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }, [messageCount]);
 
@@ -112,7 +118,7 @@ function Chat(){
         // setFolderNames(userData.data().folderNames)
         // setFolderIds(userData.data().folderIds)
         setPinnedChats(userData.data().pinnedChats)
-        setMessageCount(messageCount+1)
+        setMessageCount((state) => !state)
     }
 
     async function handleChatPin(event, chat_id) {
@@ -264,9 +270,9 @@ function Chat(){
                 )
             setDefaultDoc(obj)
             let newChatList = chatList
-            newChatList[doc.id] = data
+            newChatList[doc.id] = {...data, ...{"uid":doc.id}}
             setChatList(newChatList)
-            setMessageCount(0)
+            setMessageCount((state) => !state)
         }).catch((error)=>{
             console.log(error)
         })
@@ -279,12 +285,13 @@ function Chat(){
             defaultdoc = await handleNewChatInitiate()
         }
         let newDefaultDoc = defaultdoc;
+
         if(newDefaultDoc?.userPrompts) newDefaultDoc.userPrompts.push(prompt)
         else newDefaultDoc.userPrompts = [prompt]
 
         setPromptValue("")
         setDefaultDoc(newDefaultDoc)
-        setMessageCount(messageCount+1)
+        setMessageCount((state) => !state)
 
         let lastMessage = defaultDoc?.gptResponse?.slice(-1)
         // let SSE_URL = `https://8000-ayushanand1-custombrand-sscwxw1m6v2.ws-us98.gitpod.io/get_gpt_response?context=${lastMessage}&user=${prompt}` // test
@@ -306,13 +313,14 @@ function Chat(){
             }
             newDefaultDoc.gptResponse[newDefaultDoc.gptResponse.length-1] = response
             setForceRender((state) => !state)
-            setMessageCount(messageCount+1)
+            setMessageCount((state) => !state)
         });
 
         source.addEventListener("readystatechange", async (e) => {
             setShowStopGen((state) => !state)
             setForceRender((state) => !state)
-            setMessageCount(messageCount+1)
+            setMessageCount((state) => !state)
+
             await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultdoc.uid), {
                 userPrompts: newDefaultDoc.userPrompts,
                 gptResponse: newDefaultDoc.gptResponse
@@ -320,7 +328,7 @@ function Chat(){
             .catch((error)=>console.log(error));
         });
 
-        source.stream();      
+        source.stream();
 
         setDefaultDoc(newDefaultDoc)
         setShowStopGen((state) => !state)
@@ -340,7 +348,7 @@ function Chat(){
             console.log("deleted!")
         })
         .catch((error)=>{console.log(error)})
-        setMessageCount(messageCount-1)
+        setMessageCount((state) => !state)
     }
 
     function handleOpenDialog() {
@@ -418,7 +426,7 @@ function Chat(){
         return (
             <li key={chat_id+"li"} className="listItem" onClick={() => {
                 setDefaultDoc(chatList[chat_id]) 
-                setMessageCount(messageCount+1)
+                setMessageCount((state) => !state)
             }}> 
                 <svg key={chat_id}
                     stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
@@ -470,7 +478,7 @@ function Chat(){
                     folders[folder_id].chats?.map((chat_id) => {
                         return (<li key={chat_id} className="listItem" style={{borderBottom: "1px solid #818181"}} onClick={() => {
                             setDefaultDoc(chatList[chat_id]) 
-                            setMessageCount(messageCount+1)
+                            setMessageCount((state) => !state)
                         }}>
                             {chatList[chat_id]?.name}
                         </li>)
@@ -493,7 +501,7 @@ function Chat(){
                     style={{width: "100%", flexDirection:"row", background:"inherit"}}
                     onClick={() => {
                         setDefaultDoc(chatList[chat_id]) 
-                        setMessageCount(messageCount+1)
+                        setMessageCount((state) => !state)
                     }} >
                     <span dataRole="tick-rename-done"
                         style={{display:chatList[chat_id]?.showContentEdit?"flex":"none"}} 
@@ -642,7 +650,7 @@ function Chat(){
                                 </div>
                             </div>
                             <div className="pinnedChats">
-                                <ol>
+                                <ol className="ol">
                                     {pinnedChatsContainer}
                                 </ol>
                             </div>
@@ -665,7 +673,7 @@ function Chat(){
                                 </div>
                             </div>
                             <div className="folders">
-                                <ol>
+                                <ol className="ol">
                                     {foldersContainer}
                                 </ol>
                             </div>
@@ -684,7 +692,7 @@ function Chat(){
                                 </div>
                             </div>
                             <div className="folders">
-                                <ol>
+                                <ol className="ol">
                                     {allChats}
                                 </ol>
                             </div>
