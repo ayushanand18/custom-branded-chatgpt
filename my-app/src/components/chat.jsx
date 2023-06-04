@@ -62,6 +62,7 @@ function Chat(){
     const [folderNameN, setFolderNameN] = useState("")
     const [forceRender, setForceRender] = useState(true)
     const [showStopGen, setShowStopGen] = useState(false)
+    const [SSESource, setSSESource] = useState()
     const bottomRef = useRef()
     const [authState, setAuthState] = useState({
         isSignedIn: false,
@@ -279,6 +280,12 @@ function Chat(){
         return obj
     }
 
+    function handleStopGen(event){
+        event.preventDefault()
+        SSESource.close()
+        setShowStopGen(false)
+    }
+
     async function handleSubmitPrompt(event, prompt=promptValue, defaultdoc=defaultDoc) {
         event.preventDefault()
         if(!defaultdoc) {
@@ -303,6 +310,8 @@ function Chat(){
         setDefaultDoc(newDefaultDoc)
 
         let source = new SSE(SSE_URL);
+        
+        setSSESource(source)
 
         source.addEventListener("message", async (e) => {
             console.log(e.data, e.data.length)
@@ -800,6 +809,7 @@ function Chat(){
                         handlePromptExample={handlePromptExample}
                         forceRender={forceRender}
                         showStopGen={showStopGen}
+                        handleStopGen={handleStopGen}
                         />
                 </div>
             </div>
