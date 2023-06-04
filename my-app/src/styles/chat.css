@@ -1798,3 +1798,13 @@ summary{ list-style: none }
 .jsx-10Jsk29:hover {
     background-color: inherit;
 }
+
+code {
+    background: black;
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-content: flex-start;
+    padding: 2em;
+    flex-wrap: wrap;
+}
