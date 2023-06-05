@@ -63,6 +63,7 @@ function Chat(){
     const [forceRender, setForceRender] = useState(true)
     const [showStopGen, setShowStopGen] = useState(false)
     const [SSESource, setSSESource] = useState()
+    const [forceChatList, setForceChatList] = useState(false)
     const bottomRef = useRef()
     const [authState, setAuthState] = useState({
         isSignedIn: false,
@@ -330,11 +331,30 @@ function Chat(){
             setForceRender((state) => !state)
             setMessageCount((state) => !state)
 
-            await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultdoc.uid), {
-                userPrompts: newDefaultDoc.userPrompts,
-                gptResponse: newDefaultDoc.gptResponse
-            })
-            .catch((error)=>console.log(error));
+            if(e.readyState===2) {
+                if(newDefaultDoc.userPrompts.length===1){
+                    // await fetch(`https://8000-ayushanand1-custombrand-sscwxw1m6v2.ws-us98.gitpod.io/generate_title?context=${response}`) <- test
+                    await fetch(`https://custom-branded-chatgpt-api.onrender.com/generate_title?context=${response}`)
+                    .then((res) => res.json())
+                    .then((data) => {
+                        console.log(data);
+                        if(data.data[0]==='"') newDefaultDoc.name=data.data.slice(1, -1)
+                        else newDefaultDoc.name = data.data
+                    })
+                    .then(()=> {
+                        setDefaultDoc(newDefaultDoc);
+                        chatList[newDefaultDoc.uid] = newDefaultDoc;
+                        setChatList(chatList);
+                        setForceChatList((state) => !state)
+                    })
+                }
+                await updateDoc(doc(db, `users/${authState.user?.uid}/chats`, defaultdoc.uid), {
+                    userPrompts: newDefaultDoc.userPrompts,
+                    gptResponse: newDefaultDoc.gptResponse,
+                    name: newDefaultDoc.name
+                })
+                .catch((error)=>console.log(error));
+            }
         });
 
         source.stream();
@@ -702,7 +722,7 @@ function Chat(){
                             </div>
                             <div className="folders">
                                 <ol className="ol">
-                                    {allChats}
+                                    {forceChatList^(!forceChatList) && allChats}
                                 </ol>
                             </div>
                         </div>

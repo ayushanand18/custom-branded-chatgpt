@@ -609,7 +609,7 @@
     font-size: .875rem;
     line-height: 1.25rem;
     list-style: none;
-    color: inherit;
+    color: #c7c7c7;
     cursor: pointer;
     word-break: break-all;
     stroke: currentcolor;
@@ -621,6 +621,9 @@
     box-sizing: border-box;
     display: inline;
     vertical-align: middle;
+}
+.listItem svg:hover {
+    color: inherit;
 }
 ::marker{ display:none; } 
 summary{ list-style: none }
@@ -1807,4 +1810,22 @@ code {
     align-content: flex-start;
     padding: 2em;
     flex-wrap: wrap;
+}
+
+.chatContent ol {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+.chatContent ol li{
+    padding-top: .4em;
+    padding-bottom: .4em;
+}
+
+svg {
+    color: #c7c7c7;
+}
+
+svg:hover {
+    color: white;
 }
