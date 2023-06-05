@@ -3,6 +3,7 @@
 import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, status, Request
+from fastapi.responses import JSONResponse
 from starlette.responses import StreamingResponse
 from sse_starlette.sse import EventSourceResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -57,10 +58,6 @@ db_app = firebase_admin.initialize_app(cred)
 @app.get("/test")
 async def test():
     return "hello"
-    origin = request.environ.get('HTTP_ORIGIN', '*')
-    # resp = flask.Response(origin)
-    resp.headers['Access-Control-Allow-Origin'] = origin
-    return resp
 
 RETRY_TIMEOUT = 1000  # milisecond
 
@@ -108,6 +105,36 @@ async def get_gpt_response(context, user, request:Request):
             "status": "error",
         }
 
+@app.get("/generate_title")
+async def generate_title(context):
+    """
+    GPT4 title generation
+
+    :param context: [string] earlier chatgpt response
+
+    :return: [JSON] object with response from OpenAI GPT4 API
+
+    ::Usage
+        /generate_title?context=Intel Corporation is an American multinational corporation and technology company headquartered in Santa Clara, California. It is one of the world's largest semiconductor chip manufacturer by revenue, and is one of the developers of the x86 series of instruction sets found in most personal computers
+    """
+    request_data = [
+        {"role": "system", "content": context},
+        {"role": "user", "content": "write a very short headline for the above text"},
+    ]
+    try:
+        response = openai.ChatCompletion.create(
+                model="gpt-4",
+                messages=request_data,
+            )
+        resp = JSONResponse({"data": response.choices[0].message.content})
+        resp.headers["Access-Control-Allow-Origin"] = '*'
+        return resp
+    except BaseException as error:
+        return {
+            "error": str(error),
+            "status": "error",
+        }
+
 @app.get("/setup_new_account")
 async def setup_new_account():
     """
@@ -127,15 +154,15 @@ async def setup_new_account():
             raise IncorrectKey
 
         link = Auth.generate_password_reset_link(email, action_code_settings=None, app=db_app)
-        return jsonify({
+        return {
             "result": link,
             "status": "success",
-        })
+        }
     except BaseException as error:
-        return jsonify({
+        return {
             "result": str(error),
             "status": "error",
-        })
+        }
 
 @app.get("/create_new_account")
 async def create_new_account():
@@ -164,15 +191,15 @@ async def create_new_account():
             display_name=name,
             disabled=False
         )
-        return jsonify({
+        return {
             "result": f"created account for {email}",
             "status": "success",
-        })
+        }
     except BaseException as error:
-        return jsonify({
+        return {
             "result": str(error),
             "status": "error",
-        })
+        }
 
 #----------------------
 # Util Function
