@@ -1808,7 +1808,7 @@ code {
     border-radius: 10px;
     display: block;
     align-content: flex-start;
-    padding: 2em;
+    padding: .5em 2em 1.5em 2em;
     flex-wrap: wrap;
 }
 
@@ -1828,4 +1828,43 @@ svg {
 
 svg:hover {
     color: white;
+}
+
+table {
+    border-top: 1px solid #b1b5bd;
+    border-left: 1px solid #b1b5bd;
+    border-right: 1px solid #b1b5bd;
+    border-radius: 10px;
+    border-top-right-radius: 10px;
+} 
+
+td, th {
+    border-right: 1px solid #b1b5bd;
+    border-bottom: 1px solid #b1b5bd;
+    padding: .2rem .5rem .2rem .5rem;
+}
+
+table th:first-child{
+    border-top-left-radius: 10px;
+}
+
+table thead td:last-child {
+    border-top-right-radius: 10px;
+}
+
+table td:last-child,
+table th:last-child {
+    border-right-width: 0px;
+}
+table > tbody:last-child > tr:first-child {
+    border-bottom-left-radius: 10px;
+}
+
+table > tbody:last-child > tr:last-child {
+    border-bottom-right-radius: 10px;
+}
+
+table th {
+    background-color: rgba(236,236,241,.2);
+    padding: 0.25rem 0.75rem;
 }

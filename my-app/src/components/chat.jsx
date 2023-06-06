@@ -316,8 +316,10 @@ function Chat(){
 
         source.addEventListener("message", async (e) => {
             console.log(e.data, e.data.length)
-            if(e.data.length===1) response += `\n`
+            if(e.data.length<=1) response += `\n`
             else if(e.data[0]==="'") {
+                if(response.slice(-3)===`|\n` && e.data[1]!=='|') response+=`\n`
+
                 if(e.data[e.data.length-1]==="'") response += e.data.slice(1, -1)
                 else response += e.data.slice(1)
             }
@@ -332,13 +334,15 @@ function Chat(){
             setMessageCount((state) => !state)
 
             if(e.readyState===2) {
+                console.log(response)
                 if(newDefaultDoc.userPrompts.length===1){
                     // await fetch(`https://8000-ayushanand1-custombrand-sscwxw1m6v2.ws-us98.gitpod.io/generate_title?context=${response}`) <- test
                     await fetch(`https://custom-branded-chatgpt-api.onrender.com/generate_title?context=${response}`)
                     .then((res) => res.json())
                     .then((data) => {
                         console.log(data);
-                        if(data.data[0]==='"') newDefaultDoc.name=data.data.slice(1, -1)
+                        if(data.data[0]==='"' && data.data[data.data.length-1]==='"') 
+                            newDefaultDoc.name=data.data.slice(1, -1)
                         else newDefaultDoc.name = data.data
                     })
                     .then(()=> {
@@ -457,14 +461,14 @@ function Chat(){
                 setDefaultDoc(chatList[chat_id]) 
                 setMessageCount((state) => !state)
             }}> 
-                <svg key={chat_id}
+                <svg key={chat_id+"svg"}
                     stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="30" width="30" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
-                <span key={chat_id} className="span">
+                <span key={chat_id+"span1"} className="span">
                     {chatList[chat_id] && chatList[chat_id]?.name}
                 </span>
-                <span className="rounded-md" onClick={(event)=>handleChatUnpin(event, chat_id)} style={{backgroundColor: "transparent"}}>
+                <span key={chat_id+"span"} className="rounded-md" onClick={(event)=>handleChatUnpin(event, chat_id)} style={{backgroundColor: "transparent"}}>
                     <svg id="SvgjsSvg1001" width="24" height="24" xmlns="http://www.w3.org/2000/svg" version="1.1" style={{transform: "rotate(-45deg)", color: "rgb(255, 255, 255)", overflow: "visible"}}>
                         <defs id="SvgjsDefs1002"/>
                         <g id="SvgjsG1008">
@@ -483,7 +487,7 @@ function Chat(){
 
     const foldersContainer = Object.keys(folders)?.map((folder_id, index) => {
         return (
-        <details>
+        <details key={index+"details"}>
             <summary>
                 <li key={folder_id+"li"} style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} className="listItem bg-white-hover">
                     <span style={{display:"flex", gap:".4rem", alignItems: "center"}}>
@@ -493,7 +497,7 @@ function Chat(){
                         {folders[folder_id]?.name}
                     </span>
                     <span onClick={()=>handleDeleteFolder(folder_id)}>
-                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
+                        <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                             <line x1="10" y1="11" x2="10" y2="17"></line>
@@ -502,7 +506,7 @@ function Chat(){
                     </span>
                 </li>
             </summary>
-            <p key={folder_id+"p"} className="openFolderChats" style={{marginTop:"0px", marginBottom:'0px'}}>
+            <span key={folder_id+"p"} className="openFolderChats" style={{marginTop:"0px", marginBottom:'0px'}}>
                 <ul key={folder_id+"ul"}>{
                     folders[folder_id].chats?.map((chat_id) => {
                         return (<li key={chat_id} className="listItem" style={{borderBottom: "1px solid #818181"}} onClick={() => {
@@ -513,7 +517,7 @@ function Chat(){
                         </li>)
                     })
                 }</ul>
-            </p>
+            </span>
         </details>
         )
     })
@@ -532,7 +536,7 @@ function Chat(){
                         setDefaultDoc(chatList[chat_id]) 
                         setMessageCount((state) => !state)
                     }} >
-                    <span dataRole="tick-rename-done"
+                    <span data-role="tick-rename-done"
                         style={{display:chatList[chat_id]?.showContentEdit?"flex":"none"}} 
                         onClick={()=>handleChatRename(chat_id)}>
                         <svg height="12" viewBox="0 -10 40 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -541,12 +545,12 @@ function Chat(){
                         </svg>
                     </span>
                     <span style={{display:"flex", gap:".4rem", alignItems: "center"}}>
-                        <img key={index}
+                        <img key={index+"img"}
                             src="https://www.iconpacks.net/icons/4/free-icon-open-folder-11477.png" alt='three-dots' 
                             height='22' style={{filter: "invert(100%)", height: "16px", padding: "0px 5px 0px 0px"}}
                             onClick={()=>{chatList[chat_id].showFolderDialog ^= true;}}
                             />
-                        <span key={index}
+                        <span key={index+"span"}
                             onChange={(event)=> handleChatNameUpdate(event, chat_id)} 
                             onKeyDown={(event)=> handleChatNameUpdate(event, chat_id)}
                             className="span" style={{WebkitUserModify: (chatList[chat_id]?.showContentEdit)?"read-write":"read-only"}}>
@@ -605,7 +609,7 @@ function Chat(){
                                             <defs id="SvgjsDefs1002"></defs>
                                             <g id="SvgjsG1008">
                                                 <svg xmlns="http://www.w3.org/2000/svg" baseProfile="tiny" version="1.2" viewBox="0 0 24 24" width="16" height="16" >
-                                                    <path d="M16.729 4.271a1 1 0 0 0-1.414-.004 1.004 1.004 0 0 0-.225.355c-.832 1.736-1.748 2.715-2.904 3.293C10.889 8.555 9.4 9 7 9a1.006 1.006 0 0 0-.923.617 1.001 1.001 0 0 0 .217 1.09l3.243 3.243L5 20l6.05-4.537 3.242 3.242a.975.975 0 0 0 .326.217c.122.051.252.078.382.078s.26-.027.382-.078A.996.996 0 0 0 16 18c0-2.4.444-3.889 1.083-5.166.577-1.156 1.556-2.072 3.293-2.904a.983.983 0 0 0 .354-.225 1 1 0 0 0-.004-1.414l-3.997-4.02z" fill="#fff" class="color000 svgShape"></path>
+                                                    <path d="M16.729 4.271a1 1 0 0 0-1.414-.004 1.004 1.004 0 0 0-.225.355c-.832 1.736-1.748 2.715-2.904 3.293C10.889 8.555 9.4 9 7 9a1.006 1.006 0 0 0-.923.617 1.001 1.001 0 0 0 .217 1.09l3.243 3.243L5 20l6.05-4.537 3.242 3.242a.975.975 0 0 0 .326.217c.122.051.252.078.382.078s.26-.027.382-.078A.996.996 0 0 0 16 18c0-2.4.444-3.889 1.083-5.166.577-1.156 1.556-2.072 3.293-2.904a.983.983 0 0 0 .354-.225 1 1 0 0 0-.004-1.414l-3.997-4.02z" fill="#fff" className="color000 svgShape"></path>
                                                 </svg>
                                             </g>
                                     </svg> Pin
@@ -624,7 +628,7 @@ function Chat(){
                         </span>}
                     </span>
                     <select className="addFolder" onChange={(event)=>setFolderNameN(event.target.value)}>
-                        <option hidden disabled selected value>--folder--</option>
+                        <option hidden disabled defaultValue={"--folder--"} value>--folder--</option>
                         {Object.keys(folders)?.map((folder_id, index)=>{
                             return (
                                 <option 
@@ -646,7 +650,7 @@ function Chat(){
             <div className="settingContainer" style={{display:settingsOpen?"flex":"none"}}>
                 <h2 style={{color:"white"}}>Settings</h2>
                 <div>Signed in as {authState.user?.email}</div>
-                <label for="name">Name</label>
+                <label htmlFor="name">Name</label>
                 <input type="text" className="input nameField" id="nameField" placeholder="name" value={userName} onChange={handleNameChange}/>
                 <div className="buttonGroup">
                     <button className="updateUserInfo" onClick={handleUpdateUser}>Update</button>
@@ -729,7 +733,7 @@ function Chat(){
                     </div>
                     <div className="absolute" style={{display: quickContextVisibility?"inline":"none", bottom:"0rem", marginBottom:"7.2rem"}}>
                         <nav role="none" className="shortDialog" >
-                            <a as="a" href="#faq" target="_blank" className="py-3 transitionColors" id="headlessui-menu-item-:r2u:" role="menuitem" tabindex="-1" >
+                            <a as="a" href="#faq" target="_blank" className="py-3 transitionColors" id="headlessui-menu-item-:r2u:" role="menuitem" tabIndex="-1" >
                                 <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                                     <polyline points="15 3 21 3 21 9"></polyline>
@@ -737,7 +741,7 @@ function Chat(){
                                 </svg>
                                 Save Context
                             </a>
-                            <span href="#" as="button" className="py-3 transitionColors gap-3" id="headlessui-menu-item-:r30:" role="menuitem" tabindex="-1" >
+                            <span href="#" as="button" className="py-3 transitionColors gap-3" id="headlessui-menu-item-:r30:" role="menuitem" tabIndex="-1" >
                                 <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="12" cy="12" r="3"></circle>
                                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -763,7 +767,7 @@ function Chat(){
 
                         <div className="absolute" style={{bottom: dialogVisibility?"0%":"100%"}}>
                             <nav role="none" className="shortDialog" >
-                                <a as="a" href="#faq" target="_blank" className="py-3 transitionColors" id="headlessui-menu-item-:r2u:" role="menuitem" tabindex="-1" >
+                                <a as="a" href="#faq" target="_blank" className="py-3 transitionColors" id="headlessui-menu-item-:r2u:" role="menuitem" tabIndex="-1" >
                                     <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                                         <polyline points="15 3 21 3 21 9"></polyline>
@@ -771,15 +775,15 @@ function Chat(){
                                     </svg>
                                     Help &amp; FAQ
                                 </a>
-                                <span href="#" as="button" className="py-3 transitionColors" id="headlessui-menu-item-:r30:" role="menuitem" tabindex="-1" onClick={handleSettingsOpen} >
+                                <span href="#" as="button" className="py-3 transitionColors" id="headlessui-menu-item-:r30:" role="menuitem" tabIndex="-1" onClick={handleSettingsOpen} >
                                     <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="12" cy="12" r="3"></circle>
                                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                                     </svg>
                                     Settings
                                 </span>
-                                <span href="#" as="button" className="py-3 transitionColors gap-3" role="menuitem" tabindex="-1" onClick={handleLogout}>
-                                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                <span href="#" as="button" className="py-3 transitionColors gap-3" role="menuitem" tabIndex="-1" onClick={handleLogout}>
+                                    <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                         <polyline points="16 17 21 12 16 7"></polyline>
                                         <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -790,7 +794,7 @@ function Chat(){
                         </div>
 
                         <div className="groupRelative py-3">
-                            <button className="w-full" onClick={handleOpenDialog} id="headlessui-menu-button-:r7:" type="button" ariaHaspopup="true" ariaExpanded="false">
+                            <button className="w-full" onClick={handleOpenDialog} id="headlessui-menu-button-:r7:" type="button" aria-haspopup="true" aria-expanded="false">
                                 <div className="-ml-0.5">
                                     <div className="relativeFlex">
                                         <span className="accountSpan">
@@ -799,7 +803,7 @@ function Chat(){
                                             </span>
                                                 <img className="profileImage rounded-sm" alt="User"
                                                 height="40px"
-                                                src="https://images.unsplash.com/photo-1605106901227-991bd663255c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHNxdWFyZSUyMGRwfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60" decoding="async" dataNimg="intrinsic"
+                                                src="https://images.unsplash.com/photo-1605106901227-991bd663255c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHNxdWFyZSUyMGRwfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60" decoding="async" data-nimg="intrinsic"
                                                 srcSet="https://images.unsplash.com/photo-1605106901227-991bd663255c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHNxdWFyZSUyMGRwfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60" />
                                             </span>
                                     </div>

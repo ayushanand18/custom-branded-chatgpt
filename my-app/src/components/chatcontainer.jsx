@@ -130,8 +130,8 @@ function ChatContainer({
                                     className="flex w-full gap-2 items-center justify-center jsx-10Jsk29" 
                                     style={{width: "100%"}}>
                                     <svg 
-                                        stroke="currentColor" fill="none" stroke-width="1.5" 
-                                        viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" 
+                                        stroke="currentColor" fill="none" strokeWidth="1.5" 
+                                        viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" 
                                         className="h-3 w-3 flex-shrink-0" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                         <polyline points="1 4 1 10 7 10"></polyline>
                                         <polyline points="23 20 23 14 17 14"></polyline>
@@ -145,14 +145,14 @@ function ChatContainer({
                             <div className="divExtra"></div>
                         </div>
                         <div className="divFour">
-                            <textarea id="prompt-textarea" tabindex="0" 
+                            <textarea id="prompt-textarea" tabIndex="0" 
                                 onKeyDown={(e)=>{
                                     if(e.key==='Enter') handleSubmitPrompt(e)
                                 }}
                                 onChange={handleTextChange} 
                                 value={promptValue} rows="1" placeholder="Send a message." className="textArea"></textarea>
                             <button className="divFive" disabled="" onClick={handleSubmitPrompt}>
-                                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" className="h-4 w-4 mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                     <line x1="22" y1="2" x2="11" y2="13"></line>
                                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                                 </svg>
