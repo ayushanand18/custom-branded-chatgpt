@@ -1806,7 +1806,7 @@ code {
     background: black;
     color: white;
     border-radius: 10px;
-    display: flex;
+    display: block;
     align-content: flex-start;
     padding: 2em;
     flex-wrap: wrap;
