@@ -230,7 +230,7 @@ function Chat(){
 
     function handleAddToFolder(chat_id) {
         // do nothing if the chat is already present
-        if(folders[folderNameN] && folders[folderNameN].chats.includes(chat_id)) 
+        if(folders[folderNameN] && folders[folderNameN].chats && folders[folderNameN].chats.includes(chat_id)) 
             return
         
         Object.keys(folders)?.forEach((folder_uid)=>{
@@ -408,6 +408,7 @@ function Chat(){
     function handleSaveContext(e) {
         handleSubmitPrompt(e, "")
     }
+
     function handleOpenNav() {
         setOpenNav((state) => !state);
         setIsOverlayTwo(true);
@@ -656,7 +657,7 @@ function Chat(){
                         </span>}
                     </span>
                     <select className="addFolder" onChange={(event)=>setFolderNameN(event.target.value)}>
-                        <option hidden disabled defaultValue={"--folder--"} value>--folder--</option>
+                        <option disabled defaultValue={"--folder--"} selected value>--folder--</option>
                         {Object.keys(folders)?.map((folder_id, index)=>{
                             return (
                                 <option 
