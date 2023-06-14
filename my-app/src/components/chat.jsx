@@ -1,6 +1,6 @@
 import { React, useState, useEffect, useRef } from "react"
 import { initializeApp } from "firebase/app"
-import { getAuth, signOut, updateProfile } from "firebase/auth"
+import { getAuth, sendPasswordResetEmail, signOut, updateProfile } from "firebase/auth"
 import { doc, addDoc, getDoc, deleteDoc, getDocs, getFirestore, collection, updateDoc } from "firebase/firestore"
 import { useNavigate } from "react-router-dom"
 import ChatContainer from './chatcontainer'
@@ -384,21 +384,29 @@ function Chat(){
         setMessageCount((state) => !state)
     }
 
+    function handleResetPassword(event) {
+        sendPasswordResetEmail(auth, authState.user.email)
+        .then(() => {
+            alert('Password reset link sent to your email!')
+            handleCloseSettings()
+        })
+        .catch((error) => {
+            alert('An error occurred', error)
+        })
+    }
+
     function handleOpenDialog() {
-        const newVisibility = dialogVisibility^true;
-        setDialogVisbility(newVisibility);
-        setQuickContextVisibility(false);
+        setDialogVisbility((state) => !state)
+        setQuickContextVisibility(false)
     }
 
     function handleOpenContext() {
-        const newVisibility = quickContextVisibility^true;
-        setQuickContextVisibility(newVisibility);
-        setDialogVisbility(false);
+        setQuickContextVisibility((state) => !state)
+        setDialogVisbility(false)
     }
 
     function handleOpenNav() {
-        const nav = openNav^true;
-        setOpenNav(nav);
+        setOpenNav((state) => !state);
         setIsOverlayTwo(true);
     }
 
@@ -421,8 +429,9 @@ function Chat(){
     }
 
     function handleCloseSettings(){
-        setSettingsOpen(false);
-        setIsOverlay(false);
+        setSettingsOpen(false)
+        setIsOverlay(false)
+        setDialogVisbility(false)
     }
 
     function handleTextChange(event) {
@@ -661,6 +670,11 @@ function Chat(){
             <div className="settingContainer" style={{display:settingsOpen?"flex":"none"}}>
                 <h2 style={{color:"white"}}>Settings</h2>
                 <div>Signed in as {authState.user?.email}</div>
+                <span 
+                    style={{fontWeight: '600', fontColor: 'white', textDecoration: 'underline', cursor: 'pointer'}}
+                    onClick={(e) => handleResetPassword(e)}>
+                    Reset Password
+                </span>
                 <label htmlFor="name">Name</label>
                 <input type="text" className="input nameField" id="nameField" placeholder="name" value={userName} onChange={handleNameChange}/>
                 <div className="buttonGroup">
