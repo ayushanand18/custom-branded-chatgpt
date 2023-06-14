@@ -405,6 +405,9 @@ function Chat(){
         setDialogVisbility(false)
     }
 
+    function handleSaveContext(e) {
+        handleSubmitPrompt(e, "")
+    }
     function handleOpenNav() {
         setOpenNav((state) => !state);
         setIsOverlayTwo(true);
@@ -573,7 +576,12 @@ function Chat(){
                         <span key={index+"span"}
                             onChange={(event)=> handleChatNameUpdate(event, chat_id)} 
                             onKeyDown={(event)=> handleChatNameUpdate(event, chat_id)}
-                            className="span" style={{WebkitUserModify: (chatList[chat_id]?.showContentEdit)?"read-write":"read-only"}}>
+                            className="span" 
+                            style={{
+                                WebkitUserModify: (chatList[chat_id]?.showContentEdit)?"read-write":"read-only",
+                                backgroundColor: (chatList[chat_id]?.showContentEdit)?"white":"inherit",
+                                color: (chatList[chat_id]?.showContentEdit)?"black":"inherit"
+                                }}>
                             {chatList[chat_id]?.name}
                         </span>
                     </span>
@@ -758,14 +766,14 @@ function Chat(){
                     </div>
                     <div className="absolute" style={{display: quickContextVisibility?"inline":"none", bottom:"0rem", marginBottom:"7.2rem"}}>
                         <nav role="none" className="shortDialog" >
-                            <a as="a" href="#faq" target="_blank" className="py-3 transitionColors" id="headlessui-menu-item-:r2u:" role="menuitem" tabIndex="-1" >
+                            <span onClick={handleSaveContext} className="py-3 transitionColors" id="headlessui-menu-item-:r2u:" role="menuitem" tabIndex="-1" >
                                 <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                                     <polyline points="15 3 21 3 21 9"></polyline>
                                     <line x1="10" y1="14" x2="21" y2="3"></line>
                                 </svg>
                                 Save Context
-                            </a>
+                            </span>
                             <span href="#" as="button" className="py-3 transitionColors gap-3" id="headlessui-menu-item-:r30:" role="menuitem" tabIndex="-1" >
                                 <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="12" cy="12" r="3"></circle>

@@ -593,11 +593,18 @@
     max-height: 1.25rem;
     flex: 1 1 0%;
     overflow: hidden;
+    overflow-y: scroll;
     text-overflow: ellipsis;
     word-break: break-all;
     display: inline;
     vertical-align: middle;
+    -ms-overflow-style: none;
+    scrollbar-width: none
 }
+.listItem .span::-webkit-scrollbar {
+    display: none;
+}
+
 .listItem svg {
     padding-right: .75rem;
     -webkit-text-size-adjust: 100%;
