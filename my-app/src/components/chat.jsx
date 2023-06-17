@@ -214,6 +214,7 @@ function Chat(){
         newFolders[folder_id] =  {
                 chats: [],
                 name: newFolderName,
+                isEditing: false,
             }
         setFolders(newFolders)
         setNewFolderName("")
@@ -384,6 +385,15 @@ function Chat(){
         setMessageCount((state) => !state)
     }
 
+    function handleRemoveChatFromFolder(chat_id, folder_id) {
+        const newFolder = folders
+        let index = folders[folder_id].chats.indexOf(chat_id)
+        newFolder[folder_id].chats.splice(index, 1)
+
+        setFolders(newFolder)
+        setFoldersEdit((state) => !state)
+    }
+
     function handleResetPassword(event) {
         sendPasswordResetEmail(auth, authState.user.email)
         .then(() => {
@@ -507,16 +517,31 @@ function Chat(){
                         <svg key={folder_id} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128" width="36" height="36">
                             <path stroke="#fff" strokeLinecap="round" strokeWidth="6" d="M26 45.5C26 35.835 33.835 28 43.5 28V28L55.3399 28C58.7317 28 61.7549 30.1389 62.8838 33.3374L65.1727 39.8226C66.2737 42.9422 69.1813 45.0623 72.4881 45.1568L84.5 45.5V45.5C94.0831 45.2262 102 52.9202 102 62.5071L102 74.5V80C102 90.4934 93.4934 99 83 99V99L64 99L45 99V99C34.5066 99 26 90.4934 26 80L26 66L26 45.5Z" ></path>
                         </svg>
-                        {folders[folder_id]?.name}
+                        <span 
+                            style={{
+                                WebkitUserModify: (folders[folder_id]?.isEditing)?"read-write":"read-only",
+                                backgroundColor: (folders[folder_id]?.isEditing)?"white":"unset",
+                                color: (folders[folder_id]?.isEditing)?"black":"unset",
+                                }}>
+                            {folders[folder_id]?.name} 
+                        </span>
                     </span>
-                    <span onClick={()=>handleDeleteFolder(folder_id)}>
-                        <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            <line x1="10" y1="11" x2="10" y2="17"></line>
-                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                    <div>
+                        <svg stroke="currentColor" 
+                            onClick={() => { folders[folder_id].isEditing = true; setFolders(folders)}} 
+                            fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                         </svg>
-                    </span>
+                        <span onClick={()=>handleDeleteFolder(folder_id)}>
+                            <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                        </span>
+                    </div>
                 </li>
             </summary>
             <span key={folder_id+"p"} className="openFolderChats" style={{marginTop:"0px", marginBottom:'0px'}}>
@@ -527,6 +552,14 @@ function Chat(){
                             setMessageCount((state) => !state)
                         }}>
                             {chatList[chat_id]?.name}
+                            <span onClick={() => handleRemoveChatFromFolder(chat_id, folder_id)}>
+                                <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1.4em" xmlns="http://www.w3.org/2000/svg">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </span>
                         </li>)
                     })
                 }</ul>
