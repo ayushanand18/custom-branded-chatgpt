@@ -115,11 +115,11 @@ async def generate_title(context):
     :return: [JSON] object with response from OpenAI GPT4 API
 
     ::Usage
-        /generate_title?context=Intel Corporation is an American multinational corporation and technology company headquartered in Santa Clara, California. It is one of the world's largest semiconductor chip manufacturer by revenue, and is one of the developers of the x86 series of instruction sets found in most personal computers
+        /generate_title?context=instruction sets found in most personal computers
     """
     request_data = [
         {"role": "system", "content": context},
-        {"role": "user", "content": "write a very short headline for the above text"},
+        {"role": "user", "content": "write a very short headline for the above text in the language of the text provided"},
     ]
     try:
         response = openai.ChatCompletion.create(
