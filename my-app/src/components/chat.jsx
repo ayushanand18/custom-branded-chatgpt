@@ -577,13 +577,14 @@ function Chat(){
         return (
             <li key={index+"li"} className='listItem'
                 style={{flexDirection:"column"}}
-                onMouseEnter={() => chatList[chat_id].showThreeDots = true}
-                onMouseLeave={() => chatList[chat_id].showThreeDots = false}
                 >
                 <div
                     className={(chat_id===defaultDoc?.uid)?'divLi hovered':'divLi'} 
                     style={{width: "100%", flexDirection:"row", background:"inherit"}}
                     onClick={() => {
+                        chatList[chat_id].showThreeDots = true
+                        setChatList(chatList)
+                        setForceChatList((state) => !state)
                         setDefaultDoc(chatList[chat_id]) 
                         setMessageCount((state) => !state)
                     }} >
@@ -595,7 +596,17 @@ function Chat(){
                             <line x1="13" y1="15" x2="45" y2="-20" style={{stroke:"#fff",strokeWidth:"4"}} />
                         </svg>
                     </span>
-                    <span style={{display:"flex", gap:".4rem", alignItems: "center"}}>
+                    <span
+                        onMouseEnter={() => {
+                            chatList[chat_id].showThreeDots = true
+                            setForceChatList((state) => !state)
+                        }}
+                        onMouseLeave={() => {
+                            chatList[chat_id].showThreeDots = false
+                            setForceChatList((state) => !state)
+                        }}
+                        style={{display:"flex", gap:".4rem", alignItems: "center"}}
+                    >
                         <svg key={index+"img"}
                             width="24px" height="24px" viewBox="0 0 48 48" version="1.1"
                             style={{filter: "invert(100%)", height: "20px", padding: "0px 0px 0px 0px"}}
