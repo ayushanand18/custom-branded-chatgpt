@@ -136,7 +136,7 @@ async def generate_title(context):
         }
 
 @app.get("/setup_new_account")
-async def setup_new_account():
+async def setup_new_account(email, key):
     """
     Generate Password Reset Links with email
 
@@ -146,11 +146,11 @@ async def setup_new_account():
     ::Usage
         /setup_new_account?email=*
     """
-    email = request.args.get('email')
-    pass_key = request.args.get('key')
+    # email = request.args.get('email')
+    # pass_key = request.args.get('key')
     link = ""
     try:
-        if pass_key!=PASS_KEY:
+        if key!=PASS_KEY:
             raise IncorrectKey
 
         link = Auth.generate_password_reset_link(email, action_code_settings=None, app=db_app)
@@ -165,7 +165,7 @@ async def setup_new_account():
         }
 
 @app.get("/create_new_account")
-async def create_new_account():
+async def create_new_account(email, phone, name, key):
     """
     Create Account with email and password for new account
 
@@ -175,12 +175,12 @@ async def create_new_account():
     ::Usage
         /create_new_account?email=*&name=*&phone=*
     """
-    email = request.args.get('email')
-    phone = request.args.get('phone')
-    name = request.args.get('name')
-    pass_key = request.args.get('key')
+    # email = request.args.get('email')
+    # phone = request.args.get('phone')
+    # name = request.args.get('name')
+    # pass_key = request.args.get('key')
     try:
-        if pass_key!=PASS_KEY:
+        if key!=PASS_KEY:
             raise IncorrectKey
 
         user = Auth.create_user(
